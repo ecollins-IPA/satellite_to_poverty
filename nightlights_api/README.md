@@ -1,16 +1,19 @@
 
 
-#Overview
+# Overview
 
-
+[Description pending]
 
 countries-bounding-boxes.json was download from [here](https://github.com/sandstrom/country-bounding-boxes)
 
-#Setup
+# Setup
 
 1. Install gdal dependencies
+
 `sudo apt-get install libgdal-dev`
+
 `export CPLUS_INCLUDE_PATH=/usr/include/gdal`
+
 `export C_INCLUDE_PATH=/usr/include/gdal`
 
 retrieve the version with gdal-config --version. and then add version number to `GDAL==version` in `requirements.txt`
