@@ -1,10 +1,14 @@
-
-
 # Overview
 
-[Description pending]
+`nightlights_radiance_api.py` computes mean nightlight radiance for clusters defined by lat lng pairs.
+
+`process_eth_clusters.py` executes the `nightlights_radiance_api` for the specific use case of `eth_cluster.csv`.
 
 countries-bounding-boxes.json was download from [here](https://github.com/sandstrom/country-bounding-boxes)
+
+# How to run
+
+`python process_eth_clusters.py eth_cluster.csv ET 1,5,10`
 
 # Setup
 
@@ -33,3 +37,7 @@ Run `sudo apt-get install python3-venv` if you dont have venv installed.
 5. Install python libraries
 
 `pip install -r requirements.txt`
+
+# References
+
+Most of the code of `nightlights_radiance_api.py` was extracted and adapted from https://github.com/jmather625/predicting-poverty-replication

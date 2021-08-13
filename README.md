@@ -1,3 +1,5 @@
-Code adapted from https://github.com/jmather625/predicting-poverty-replication.
+This repo contains two folders useful for prototyping the Satellite PPI.
 
-`nightlights_api` computes mean nightlight radiance for clusters defined by lat lng pairs.
+* *nightlights_api* is a simple set of script that computes mean nightlight radiance for a given set of coordinate points. Please check the folder readme for instructions
+
+* *predicting-poverty-replication* is a replication and some refactoring of [this](https://github.com/jmather625/predicting-poverty-replication) repo, which is the code used in Jeat et al.(2016). Basically its just the same code but written in a slightly nicer way. And its unfinished.
