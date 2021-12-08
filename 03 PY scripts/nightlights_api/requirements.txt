@@ -1,4 +1,0 @@
-GDAL==3.0.4
-numpy
-boto3
-geoio
