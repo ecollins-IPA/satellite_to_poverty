@@ -6,10 +6,15 @@
 set more off
 clear all
 
-global dta "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016\02 Data\01 Data\LSMS\Consumption Aggregate"
-global clean "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016\02 Data\02 Clean\LSMS"
+*Manuel Cardona Arias	
+if "`c(username)'" == "manuelarias" {
+	gl path "/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA"
+}
 
-import delimited "$dta\cons_agg_w3.csv", clear
+global dta "$path/02 Data/01 Raw/LSMS/Consumption Aggregate"
+global clean "$path/02 Data/02 Clean/LSMS"
+
+import delimited "$dta/cons_agg_w3.csv", clear
 
 *Rename variables
 ren pw_w3 hh_weight

@@ -6,17 +6,24 @@
 set more off
 clear all
 
-global dta "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016\02 Data\01 Data\LSMS\Household"
-global clean "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016\02 Data\02 Clean\LSMS"
-global temp "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016\02 Data\01 Data\Temp"
-global geo "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016\02 Data\01 Data\LSMS\Geovariables"
+*Manuel Cardona Arias	
+if "`c(username)'" == "manuelarias" {
+	gl path "/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA"
+}
+
+
+global dta "$path/02 Data/01 Raw/LSMS/Household"
+global clean "$path/02 Data/02 Clean/LSMS"
+global temp "$path/02 Data/01 Raw/Temp"
+global geo "$path/02 Data/01 Raw/LSMS/Geovariables"
+
 
 
 *************
 * Section 1 *
 *************
 
-import delimited "$dta\sect1_hh_w3.csv", clear
+import delimited "$dta/sect1_hh_w3.csv", clear
 
 duplicates report household_id individual_id
 sort household_id individual_id
@@ -59,12 +66,12 @@ quietly by hh_id ind_id: gen dup = cond(_N==1,0,_n)
 drop if dup>1
 drop dup
 
-save "$temp\Ethiopia_temp1.dta", replace
+save "$temp/Ethiopia_temp1.dta", replace
 
 *************
 * Section 2 *
 *************
-import delimited "$dta\sect2_hh_w3.csv", clear
+import delimited "$dta/sect2_hh_w3.csv", clear
 
 duplicates report household_id individual_id
 quietly bysort household_id individual_id: gen dup = cond(_N==1,0,_n)
@@ -73,7 +80,7 @@ drop dup
 ren (household_id individual_id) (hh_id ind_id) 
 
 
-merge 1:1 hh_id ind_id using "$temp\Ethiopia_temp1.dta"
+merge 1:1 hh_id ind_id using "$temp/Ethiopia_temp1.dta"
 keep if _merge==3  //Keep if Household Head
 keep hh_id ind_id rural pw_w3 saq01 saq02 saq04 hh_s2q00 hh_s2q02 hh_s2q03 hh_s2q05 hhead_sex hhead_age hhead_religion hhead_maritals
 ren (hh_s2q02 hh_s2q03 hh_s2q05) (hhead_readwrite hhead_attended hhead_grade)
@@ -87,9 +94,9 @@ tab hhead_attended, mis
 *Household Head highest grade
 tab hhead_grade, mis
 
-save "$temp\Ethiopia_temp1.dta", replace
+save "$temp/Ethiopia_temp1.dta", replace
 
-import delimited "$dta\sect2_hh_w3.csv", clear
+import delimited "$dta/sect2_hh_w3.csv", clear
 
 duplicates report household_id individual_id
 quietly bysort household_id individual_id: gen dup = cond(_N==1,0,_n)
@@ -97,7 +104,7 @@ drop if dup>1
 drop dup
 ren (household_id individual_id) (hh_id ind_id) 
 
-merge 1:1 hh_id ind_id using "$temp\Ethiopia_temp1.dta"
+merge 1:1 hh_id ind_id using "$temp/Ethiopia_temp1.dta"
 keep hh_id ind_id rural pw_w3 saq01 saq02 saq04 hh_s2q00 hh_s2q02 hh_s2q03 hh_s2q05 hhead_readwrite-hhead_maritals _merge
 
 *Can anyone in the household read and write in any language?
@@ -127,13 +134,13 @@ drop hh_grade hh_s2q05 hh_s2q03
 
 keep if _merge==3 //Keep one observation per household
 drop _merge
-save "$temp\Ethiopia_temp1.dta", replace
+save "$temp/Ethiopia_temp1.dta", replace
 
 *************
 * Section 3 *
 *************
 
-import delimited "$dta\sect3_hh_w3.csv", clear
+import delimited "$dta/sect3_hh_w3.csv", clear
 
 duplicates report household_id individual_id
 quietly bysort household_id individual_id: gen dup = cond(_N==1,0,_n)
@@ -143,7 +150,7 @@ ren (household_id individual_id) (hh_id ind_id)
 
 keep hh_id ind_id hh_s3q03 hh_s3q08a 
 
-merge 1:1 hh_id ind_id using "$temp\Ethiopia_temp1.dta"
+merge 1:1 hh_id ind_id using "$temp/Ethiopia_temp1.dta"
 
 *Health questions for anyone in the household
 *Health problems
@@ -179,12 +186,12 @@ drop if dup>1
 drop dup
 
 drop _merge
-save "$temp\Ethiopia_temp1.dta", replace
+save "$temp/Ethiopia_temp1.dta", replace
 
 **************
 * Section 5a *
 **************
-import delimited "$dta\sect5a_hh_w3.csv", clear
+import delimited "$dta/sect5a_hh_w3.csv", clear
 drop household_id2 
 ren household_id hh_id
 keep hh_id hh_s5aq0a hh_s5aq01
@@ -246,15 +253,15 @@ foreach var in consumed1-consumed32{
 	//Drop items that might be seasonal/problematic
 	drop consumed6 consumed9 consumed10 consumed12 consumed13 consumed14 consumed19 consumed22 consumed23 consumed24 consumed25 consumed29 consumed30 consumed31
 	
-merge 1:1 hh_id using "$temp\Ethiopia_temp1.dta"
+merge 1:1 hh_id using "$temp/Ethiopia_temp1.dta"
 keep if _merge==3
 drop _merge
-save "$temp\Ethiopia_temp1.dta", replace
+save "$temp/Ethiopia_temp1.dta", replace
 
 **************
 * Section 6a *
 **************
-import delimited "$dta\sect6a_hh_w3.csv", clear
+import delimited "$dta/sect6a_hh_w3.csv", clear
 drop household_id2 
 ren household_id hh_id
 keep hh_id hh_s6aq00 hh_s6aq01
@@ -288,15 +295,15 @@ reshape wide purchased, i(hh_id) j(item)
 	
 	drop purchased1 purchased2 purchased6 purchased11 purchased12
 	
-merge 1:1 hh_id using "$temp\Ethiopia_temp1.dta"
+merge 1:1 hh_id using "$temp/Ethiopia_temp1.dta"
 keep if _merge==3
 drop _merge
-save "$temp\Ethiopia_temp1.dta", replace
+save "$temp/Ethiopia_temp1.dta", replace
 
 **************
 * Section 6b *
 **************
-import delimited "$dta\sect6b_hh_w3.csv", clear
+import delimited "$dta/sect6b_hh_w3.csv", clear
 drop household_id2 
 ren household_id hh_id
 keep hh_id hh_s6bq00 hh_s6bq03
@@ -331,15 +338,15 @@ reshape wide purchase, i(hh_id) j(item)
 	
 	drop purchase1 purchase2 purchase3 purchase4 purchase10 purchase11 purchase12
 	
-merge 1:1 hh_id using "$temp\Ethiopia_temp1.dta"
+merge 1:1 hh_id using "$temp/Ethiopia_temp1.dta"
 keep if _merge==3
 drop _merge
-save "$temp\Ethiopia_temp1.dta", replace
+save "$temp/Ethiopia_temp1.dta", replace
 
 *************
 * Section 7 *
 *************
-import delimited "$dta\sect7_hh_w3.csv", clear
+import delimited "$dta/sect7_hh_w3.csv", clear
 drop household_id2 
 
 duplicates report household_id
@@ -358,16 +365,16 @@ label define yesno 0 "No" 1"Yes"
 label values hh_fs1 yesno
 label values hh_fs6 yesno
 
-merge 1:1 hh_id using "$temp\Ethiopia_temp1.dta"
+merge 1:1 hh_id using "$temp/Ethiopia_temp1.dta"
 keep if _merge==3
 drop _merge
-save "$temp\Ethiopia_temp1.dta", replace
+save "$temp/Ethiopia_temp1.dta", replace
 
 
 ************
 * Section 9*
 ************
-import delimited "$dta\sect9_hh_w3.csv", clear
+import delimited "$dta/sect9_hh_w3.csv", clear
 
 *Dwelling Characteristics
 duplicates report household_id
@@ -457,15 +464,15 @@ tab hh_light, mis
 ren hh_s9q21 hh_cook
 tab hh_cook, mis
 
-merge 1:1 hh_id using "$temp\Ethiopia_temp1.dta"
+merge 1:1 hh_id using "$temp/Ethiopia_temp1.dta"
 keep if _merge==3
 drop _merge
-save "$temp\Ethiopia_temp1.dta", replace
+save "$temp/Ethiopia_temp1.dta", replace
 
 *************
 * Section 10*
 *************
-import delimited "$dta\sect10_hh_w3.csv", clear
+import delimited "$dta/sect10_hh_w3.csv", clear
 
 drop household_id2
 ren household_id hh_id
@@ -514,26 +521,26 @@ reshape wide hmany, i(hh_id) j(item)
 	//Most of the assets have less than 10% of ownershiop. Assets will more than 90% in the 0 category will be dropped.
 drop hmany1 hmany2 hmany7 hmany14 hmany15 hmany16 hmany17 hmany18 hmany19 hmany23 hmany28 hmany29 hmany34 hmany35
 
-merge 1:1 hh_id using "$temp\Ethiopia_temp1.dta"
+merge 1:1 hh_id using "$temp/Ethiopia_temp1.dta"
 keep if _merge==3
 drop _merge
-save "$temp\Ethiopia_temp1.dta", replace
+save "$temp/Ethiopia_temp1.dta", replace
 
 *Order variables
 order hh_id ind_id-hh_medassist consumed1-consumed32 purchased3-purchased9 purchase5-purchase9 hh_fs1-hh_fs6 hh_status-hh_cook hmany3-hmany33
 compress
-save "$clean\ESS3_Ethiopia.dta", replace
+save "$clean/ESS3_Ethiopia.dta", replace
 
 ****************
 * Geovariables *
 ****************
 
-import delimited "$geo\ETH_HouseholdGeovars_y3.csv", clear
+import delimited "$geo/ETH_HouseholdGeovars_y3.csv", clear
 keep household_id2 lat_dd_mod lon_dd_mod
 quietly bysort household_id2: gen dup = cond(_N==1,0,_n)
 drop if dup>1
 drop dup
-merge 1:m household_id2 using "$clean\ESS3_Ethiopia.dta"
+merge 1:m household_id2 using "$clean/ESS3_Ethiopia.dta"
 keep if _merge==3
 drop _merge
 
@@ -541,4 +548,4 @@ ren (lat_dd_mod lon_dd_mod) (cluster_lat cluster_lon)
 
 order hh_id ind_id household_id2 cluster_lat cluster_lon pw_w3 saq01 saq02 saq04 hh_s2q00 consumed1-consumed32 purchased3-purchased9 purchase5-purchase9 hh_fs1-hh_fs6 hh_status-hh_cook hmany3-hmany33
 compress
-save "$clean\ESS3_Ethiopia.dta", replace
+save "$clean/ESS3_Ethiopia.dta", replace

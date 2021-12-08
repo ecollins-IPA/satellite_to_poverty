@@ -5,12 +5,12 @@
 rm(list = ls())
 
 #Change to your working Directory
-root = "C://Users//Manuel Cardona Arias//Box Sync//IPA_Programs_PPI//07 PPI Development//ppi-code"
-root2 = "C://Users//Manuel Cardona Arias//Box Sync//IPA_Programs_PPI//07 PPI Development//ETHIOPIA//Ethiopia - Socioeconomic Survey 2015-2016"
-pre_p = paste(root,"//01 Pre-Process//", sep="") ##Pre-process functions are stored here
-fun_l = paste(root,"//02 Function Library//", sep="") ##All other functions used in this code are stored here
-clean = paste(root2,"//02 Data//02 Clean//Luminosity//", sep="") ##Data that was clean by STATA is kept here
-results = paste(root2, "//08 Results//Luminosity//", sep="")
+root = "/Users/manuelarias/Box/IPA_Programs_PPI/07 PPI Development/ppi-code/"
+root2 = "/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/"
+pre_p = paste(root,"01 Pre-Process/", sep="") ##Pre-process functions are stored here
+fun_l = paste(root,"02 Function Library/", sep="") ##All other functions used in this code are stored here
+clean = paste(root2,"02 Data/02 Clean/Luminosity/", sep="") ##Data that was clean by STATA is kept here
+results = paste(root2, "/08 Results/Luminosity/", sep="")
 
 #File names
 survey_data <-"PPI_Ethiopia_2015-2016.dta" #Database name

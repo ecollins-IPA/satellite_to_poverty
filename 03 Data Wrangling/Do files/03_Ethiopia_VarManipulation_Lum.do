@@ -7,16 +7,20 @@
 set more off
 clear all
 
-global dta "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016\02 Data\01 Data\LSMS\Household"
-global clean "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016\02 Data\02 Clean\Luminosity"
+*Manuel Cardona Arias	
+if "`c(username)'" == "manuelarias" {
+	gl path "/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA"
+}
+
+global dta "$path/02 Data/01 Raw/LSMS/Household"
+global clean "$path/02 Data/02 Clean/Luminosity"
 
 *Personal global (may change the path)
-global path "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016"
 	*No need to change
-	global root "$path\02 Data\01 Data\LSMS\Household"
-	global clean "$path\02 Data\02 Clean\LSMS"
-	global gps "$path\02 Data\01 Data\GPS"
-	global lum "$path\02 Data\02 Clean\Luminosity"
+	global root "$path/02 Data/01 Raw/LSMS/Household"
+	global clean "$path/02 Data/02 Clean/LSMS"
+	global gps "$path/02 Data/02 Data/GPS"
+	global lum "$path/02 Data/02 Clean/Luminosity"
 
 	
 *************To customize:*****************
@@ -33,7 +37,7 @@ global qkey "Ethiopia15-16_QuestionKEY.csv"
 ************ Luminosity data *************
 ******************************************
 ******************************************
-import delimited "$path/02 Data/01 Data/GPS/computed_eth.csv", clear
+import delimited "$path/02 Data/01 Raw/GPS/computed_eth.csv", clear
 global radiance "radiance_around_1_kms radiance_around_5_kms radiance_around_10_kms"
 /*
 foreach var of varlist $radiance{
@@ -55,7 +59,7 @@ drop _merge
 ***************************************
 ***  Merge with poverty indicators  ***
 ***************************************
-merge 1:m hh_id using "$clean\HICE_Ethiopia_2016_poverty.dta"
+merge 1:m hh_id using "$clean/HICE_Ethiopia_2016_poverty.dta"
 keep if _merge==3
 
 	*Household Size
@@ -539,14 +543,14 @@ drop dup
 order hh_id ind_id household_id2 cluster_lat cluster_lon hh_weight ind_weight adulteq rural pw_w3 saq01 saq02 saq04 hh_s2q00 ea_id ea_id2 no_conv no_cons food_cons_ann nonfood_cons_ann educ_cons_ann total_cons_ann price_index_hce nom_totcons_aeq cpi_factor_11 cpi_factor_05 ppp_factor_11 ppp_factor_05 abs_pl food_pl cons_exp_pa cons_exp_pa_spa poor_npl1 poor_npl2 poor_150npl1-poor_bottom_80 region radiance_around_1_kms radiance_around_5_kms radiance_around_10_kms radiance_around_1_kms_sq radiance_around_5_kms_sq radiance_around_10_kms_sq hh_size hhead_hproblem hhead_medassist hhead_readwrite hhead_attended hhead_maxgrade
 drop hh_s2q00 ea_id ea_id2 no_conv no_cons food_cons_ann nonfood_cons_ann educ_cons_ann total_cons_ann price_index_hce nom_totcons_aeq cpi_factor_11 cpi_factor_05 ppp_factor_11 ppp_factor_05 cons_exp_pa cons_exp_pa_spa _merge saq01-saq04
 compress
-save "$lum\\$masterdb", replace
+save "$lum/$masterdb", replace
 
 		************************************************
 		************************************************
 		*************Arrange for custom PPI*************	After changing the globals: this code should run without any further changes
 		************************************************
 		************************************************
-		u "$lum\\$masterdb", clear
+		u "$lum/$masterdb", clear
 		set more off
 		
 		*************To customize:*****************
@@ -600,7 +604,7 @@ save "$lum\\$masterdb", replace
 		drop if name==""
 		sort name value
 		keep name orig_name label value
-		save "$clean\PPI_labels.dta",  replace //Save the variable names with it's labels
+		save "$clean/PPI_labels.dta",  replace //Save the variable names with it's labels
 		restore
 		drop name label value orig_name
 		
@@ -636,14 +640,14 @@ order hh_id-ind_weight urban poor_npl1-hmany331
 		//Now, we only have 56 variables in  the DB.
 	order hh_id-poor_bottom_80 region1-region5
 	
-saveold "$lum\\$ppidb", replace version(12)
+saveold "$lum/$ppidb", replace version(12)
 
 				************************************************
 				************************************************
 				*******Arrange for question key CSV file******** After changing the globals: this code should run without any further changes
 				************************************************
 				************************************************
-				u "$lum\\$ppidb", clear
+				u "$lum/$ppidb", clear
 				
 				*************To customize:*****************
 				///////////////////////////////////////////
@@ -683,6 +687,6 @@ saveold "$lum\\$ppidb", replace version(12)
 				rename (unique_var_number varname) (unique_q_number variable_name)
 				keep  variable_name unique_q_number
 				order unique_q_number
-				export delimited using "$lum\\$qkey",  replace
+				export delimited using "$lum/$qkey",  replace
 
 

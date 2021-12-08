@@ -29,7 +29,7 @@ library(hrbrthemes)
 # *****************************************************************************
 #### 02_Load_data ####
 # *****************************************************************************
-  setwd("~/../Box Sync/IPA_Programs_PPI/07 PPI Development/ETHIOPIA/Ethiopia - Socioeconomic Survey 2015-2016/")
+  setwd("/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/")
   
   #----No radiance scores----
   mod0<-read.csv("08 Results/LSMS/PovRate_Errors_10q_ALLpovlines.csv")
@@ -167,18 +167,18 @@ library(hrbrthemes)
   #Import font. You may need to download the relevant fonts from:
   #https://fonts.google.com/specimen/Open+Sans?query=open+sans
   
-  font_import(paths = "C:/Users/Manuel Cardona Arias/Downloads/Open_Sans/",prompt = F) 
+  #font_import(paths = "C:/Users/Manuel Cardona Arias/Downloads/Open_Sans/",prompt = F) 
   
   #Color palette: Tableau 20
-  palette<-paletteer_d("ggthemes::Tableau_20")
+  palette<-paletteer::paletteer_d("ggthemes::Tableau_20")
   
-      #----Poverty rate error----
+  #----Poverty rate error----
       rate_error<-ggplot(mods, aes(x = zone, y = mean_error_model, fill= model)) +
         geom_col(position = "dodge", colour = "white") +
         geom_text(aes(label = error), vjust = 1.4, colour = "white", size = 3, position = position_dodge(0.9)) +
         #coord_flip()+
         scale_fill_manual(values=c(palette[1], palette[5], palette[15]))+
-        scale_y_continuous(breaks = number_ticks(10)) +
+        scale_y_continuous(breaks = dampack::number_ticks(10)) +
         theme_minimal() +
         theme(plot.title = element_text(face = "bold",
                                         size = 20,

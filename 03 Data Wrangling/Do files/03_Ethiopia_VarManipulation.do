@@ -9,14 +9,18 @@
 set more off
 clear all
 
-global dta "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016\02 Data\01 Data\LSMS\Household"
-global clean "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016\02 Data\02 Clean\LSMS"
+*Manuel Cardona Arias	
+if "`c(username)'" == "manuelarias" {
+	gl path "/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA"
+}
+
+global dta "$path/02 Data/01 Raw/LSMS/Household"
+global clean "$path/02 Data/02 Clean/LSMS"
 
 *Personal global (may change the path)
-global path "C:\Users\Manuel Cardona Arias\Box Sync\IPA_Programs_PPI\07 PPI Development\ETHIOPIA\Ethiopia - Socioeconomic Survey 2015-2016"
 	*No need to change
-	global root "$path\02 Data\01 Data\LSMS\Household"
-	global clean "$path\02 Data\02 Clean\LSMS"
+	global root "$path/02 Data/01 Raw/LSMS/Household"
+	global clean "$path/02 Data/02 Clean/LSMS"
 
 	
 *************To customize:*****************
@@ -38,7 +42,7 @@ u "$clean/$odb", clear
 ***************************************
 ***  Merge with poverty indicators  ***
 ***************************************
-merge 1:m hh_id using "$clean\HICE_Ethiopia_2016_poverty.dta"
+merge 1:m hh_id using "$clean/HICE_Ethiopia_2016_poverty.dta"
 keep if _merge==3
 
 	*Household Size
@@ -511,18 +515,18 @@ label values region regions
 tab region, sum(poor_npl1)
 
 *ORDER DATABASE
-ren (lat_dd_mod lon_dd_mod) (cluster_lat cluster_lon)
+//ren (lat_dd_mod lon_dd_mod) (cluster_lat cluster_lon)
 order hh_id ind_id household_id2 cluster_lat cluster_lon hh_weight ind_weight adulteq rural pw_w3 saq01 saq02 saq04 hh_s2q00 ea_id ea_id2 no_conv no_cons food_cons_ann nonfood_cons_ann educ_cons_ann total_cons_ann price_index_hce nom_totcons_aeq cpi_factor_11 cpi_factor_05 ppp_factor_11 ppp_factor_05 abs_pl food_pl cons_exp_pa cons_exp_pa_spa poor_npl1 poor_npl2 poor_150npl1-poor_bottom_80 region hh_size hhead_hproblem hhead_medassist hhead_readwrite hhead_attended hhead_maxgrade
 drop hh_s2q00 ea_id ea_id2 no_conv no_cons food_cons_ann nonfood_cons_ann educ_cons_ann total_cons_ann price_index_hce nom_totcons_aeq cpi_factor_11 cpi_factor_05 ppp_factor_11 ppp_factor_05 cons_exp_pa cons_exp_pa_spa _merge saq01-saq04
 compress
-save "$clean\\$masterdb", replace
+save "$clean/$masterdb", replace
 
 		************************************************
 		************************************************
 		*************Arrange for custom PPI*************	After changing the globals: this code should run without any further changes
 		************************************************
 		************************************************
-		u "$clean\\$masterdb", clear
+		u "$clean/$masterdb", clear
 		set more off
 		
 		*************To customize:*****************
@@ -576,7 +580,7 @@ save "$clean\\$masterdb", replace
 		drop if name==""
 		sort name value
 		keep name orig_name label value
-		save "$clean\PPI_labels.dta",  replace //Save the variable names with it's labels
+		save "$clean/PPI_labels.dta",  replace //Save the variable names with it's labels
 		restore
 		drop name label value orig_name
 		
@@ -611,14 +615,14 @@ order hh_id-ind_weight urban poor_npl1-hmany331
 	keep hh_id-region5 hh_size1 hh_size2 hhead_readwrite1 hhead_attended1 hhead_maxgrade1 consumed181 consumed201 purchased071 purchase061 hh_roof1 hh_kitchen1 hh_toilet1 hh_toiletshared1 hh_toiletshared2 hh_disposal1 hh_light1 hh_cook1 hmany041 hmany042 hmany051 hmany052 hmany061 hmany091 hmany311
 		//Now, we only have 56 variables in  the DB.
 		
-saveold "$clean\\$ppidb", replace version(12)
+saveold "$clean/$ppidb", replace version(12)
 
 				************************************************
 				************************************************
 				*******Arrange for question key CSV file******** After changing the globals: this code should run without any further changes
 				************************************************
 				************************************************
-				u "$clean\\$ppidb", clear
+				u "$clean/$ppidb", clear
 				
 				*************To customize:*****************
 				///////////////////////////////////////////
@@ -658,4 +662,4 @@ saveold "$clean\\$ppidb", replace version(12)
 				rename (unique_var_number varname) (unique_q_number variable_name)
 				keep  variable_name unique_q_number
 				order unique_q_number
-				export delimited using "$clean\\$qkey",  replace
+				export delimited using "$clean/$qkey",  replace
