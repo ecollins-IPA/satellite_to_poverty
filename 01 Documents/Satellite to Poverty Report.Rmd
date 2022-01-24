@@ -1,0 +1,41 @@
+---
+title: "PPI Satellite Mapping Integration"
+author: "Manuel Cardona, Elliott Collins"
+date: "1/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Motivation
+
+Detailed household income or consumption surveys are typically too expensive or time-consuming for standard monitoring and evaluation efforts, raising the need for inexpensive indices that estimate poverty rates using only a few data points. One solution is to use shorter surveys like IPA's Poverty Probability Index (PPI).
+
+As the scientific community has pointed out, accurate estimates of household consumption and assets can be extracted from satellite images. We are interested in incorporating these recent findings into our poverty measurement work, in particular by including features from satellite imagery to improve the predictive power of our current 10-item survey model.
+
+IPA's PPI tool is one of the leading poverty measurement tools used by researchers, social enterprises, and micro-finance institutions over the past decade. IPA researchers developed the current PPI methodology (Kshirsagar, 2017), which applies machine-learning algorithms to large-scale nationally-representative household surveys to produce country-specific 10-question scorecards that estimate the probability that a household lives below a given poverty line.
+
+In parallel efforts (Yeh et al., 2020) (Jean et al., 2016), researchers have built deep learning models using public satellite imagery and the same household surveys to generate high-resolution maps of wealth in Sub-Saharan Africa. Compared to the PPI, these models provide much more spatially granular estimates using less client-level data, but lose the ability to use within-community factors. This project combines the advantages of both approaches by combining their main data sources:
+
+1. Satellite imagery: a multi-dimensional, spatial disaggregated, frequently updated source of data that requires knowing only a person's location.
+2. Survey and administrative data: Individual or household-level characteristics such as gender, occupation, education, and household assets o consumption letting organizations account for factors not captured by location alone.
+
+The integrated model will be able to take advantage of the satellite imagery and household-level indicators in a unified framework, while the indicator selection will integrate both machine learning and expert knowledge. Our initial study tests the accuracy and reliability of these models in three countries based on changes in satellite imagery, and the reliability of the model when measuring poverty for key ethnic, regional, and demographic sub-populations.
+
+## How might the outcomes be measured?
+
+We aim to compare both the accuracy, ease of use, and costs of our proposed approach against standard techniques that are implemented at a large scale in the sector, including the PPI, the satellite-based mapping methods, and other "low-cost" methods like the World Bank's SWIFT assessment or the DHS program's EquityTool.
+
+### Accuracy
+
+Accuracy will be measured first by making predictions on out of sample test sets, and then through validation exercises using data collected in the course of other IPA research projects. 
+
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
