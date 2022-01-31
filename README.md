@@ -23,3 +23,11 @@ Code was written in R 4.1.2 and Python [TBD]
 
 
 ## Instructions for processing PPI data
+
+* *01_Ethiopia_VarSelection* restricts LSMS datasets to the variables that are suitable as PPI candidate indicators.
+
+* *02_Ethiopia_Poverty* replicates national and international poverty lines, based on consumption indicators and definitions by the World Bank.
+
+* *03_Ethiopia_VarManipulation* manipulates the candidate questions and converts them into binary usable indicators. This file does NOT include luminosity scores.
+
+* *03_Ethiopia_VarManipulation_Lum* manipulates the candidate questions and converts them into binary usable indicators. This file does include luminosity scores.
