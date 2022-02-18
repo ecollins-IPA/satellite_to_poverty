@@ -5,8 +5,8 @@
 rm(list = ls())
 
 #Change to your working Directory
-root = "/Users/manuelarias/Box/IPA_Programs_PPI/07 PPI Development/ppi-code/"
-root2 = "/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/"
+root = "/Users/manuelarias/Library/CloudStorage/Box-Box/IPA_Programs_PPI/07 PPI Development/ppi-code/"
+root2 = "../../satellite_to_poverty_IPA/"
 pre_p = paste(root,"01 Pre-Process/", sep="") ##Pre-process functions are stored here
 fun_l = paste(root,"02 Function Library/", sep="") ##All other functions used in this code are stored here
 clean = paste(root2,"02 Data/02 Clean/Luminosity/", sep="") ##Data that was clean by STATA is kept here
@@ -93,8 +93,6 @@ penalty_vector_full <- rep(1, times = nrow(question_key))
 penalty_vector_full[1:(region_number+6)]<-0
 penalty_vector_full_2 <- rep(1, times = nrow(question_key))
 penalty_vector_full_2[1:region_number]<-0
-
-
 
 ################# STEP 3: Choose candidate indicators 
 for (nq in numb_questions) { 
