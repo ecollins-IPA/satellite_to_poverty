@@ -5,12 +5,12 @@
 rm(list = ls())
 
 #Change to your working Directory
-root = "C://Users//Manuel Cardona Arias//Box Sync//IPA_Programs_PPI//07 PPI Development//ppi-code"
-root2 = "C://Users//Manuel Cardona Arias//Box Sync//IPA_Programs_PPI//07 PPI Development//ETHIOPIA//Ethiopia - Socioeconomic Survey 2015-2016"
-pre_p = paste(root,"//01 Pre-Process//", sep="") ##Pre-process functions are stored here
-fun_l = paste(root,"//02 Function Library//", sep="") ##All other functions used in this code are stored here
-clean = paste(root2,"//02 Data//02 Clean//", sep="") ##Data that was clean by STATA is kept here
-results = paste(root2, "//08 Results", sep="")
+root = "/Users/manuelarias/Library/CloudStorage/Box-Box/IPA_Programs_PPI/07 PPI Development/ppi-code/"
+root2 = "../../satellite_to_poverty_IPA/"
+pre_p = paste(root,"01 Pre-Process/", sep="") ##Pre-process functions are stored here
+fun_l = paste(root,"02 Function Library/", sep="") ##All other functions used in this code are stored here
+clean = paste(root2,"02 Data/02 Clean/LSMS/", sep="") ##Data that was clean by STATA is kept here
+results = paste(root2, "08 Results/LSMS/", sep="")
 
 #File names
 survey_data <-"PPI_Ethiopia_2015-2016.dta" #Database name
@@ -29,8 +29,8 @@ weight_name <- "hh_weight"  #Column name for household weight
 ID <- "hh_id"
 
 # All the candidate features should be in adjacent columns (CHANGE THE FIRST AND LAST COLUMN)
-candidate_feature_first_col <- 25 #the column number of the first candidate indicator
-candidate_feature_last_col <- 52 #the column number of the last candidate indicator
+candidate_feature_first_col <- 28 #the column number of the first candidate indicator
+candidate_feature_last_col <- 55 #the column number of the last candidate indicator
 region_number <- 4 #Number of regions in question_key
 sub_question_number <- 1 #identify unique question number (from the key file) for the subnational questions
 numb_questions <- c(10) # Number of questions that are to be selected by the LASSO
@@ -42,7 +42,7 @@ cv_nfold <- 10 #Number of folds used in the cross validation elastic nets
 bootstrap_size_selection <- 1000 #Number of times we bootstrap to select indicators
 bootstrap_sample <- 1000 #Number of obs the bootstrap draws randomly per iteration
 bootstrap_error_reps <- 1000 #Number of times we bootstrap to calculate error rates
-bootstrap_sample_size <- c(100,500) #Sample sizes for bootstrapping errors - Targetting error.
+bootstrap_sample_size <- c(100,500) #Sample sizes for bootstrapping errors - Targetting error. 
 bootstrap_error_sample_size <- seq(from = 100, to = 500, by = 50) #Sample sizes for bootstrapping errors - Poverty rates
 
 ##############################################################################
