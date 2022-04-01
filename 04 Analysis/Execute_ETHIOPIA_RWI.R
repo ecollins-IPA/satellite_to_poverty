@@ -9,8 +9,8 @@ root = "/Users/manuelarias/Library/CloudStorage/Box-Box/IPA_Programs_PPI/07 PPI 
 root2 = "../../satellite_to_poverty_IPA/"
 pre_p = paste(root,"01 Pre-Process/", sep="") ##Pre-process functions are stored here
 fun_l = paste(root,"02 Function Library/", sep="") ##All other functions used in this code are stored here
-clean = paste(root2,"02 Data/02 Clean/LSMS/", sep="") ##Data that was clean by STATA is kept here
-results = paste(root2, "08 Results/LSMS/", sep="")
+clean = paste(root2,"02 Data/02 Clean/RWI/", sep="") ##Data that was clean by STATA is kept here
+results = paste(root2, "/08 Results/RWI/", sep="")
 
 #File names
 survey_data <-"PPI_Ethiopia_2015-2016.dta" #Database name
@@ -21,17 +21,18 @@ qkey_num <- 1 #Column number of question number (not variable name)
 target_base <- "poor_npl1" # target_base is the measure of poverty that used to select the questions: usually the National Poverty Line
 
 # target is the poverty classification that we are trying to predict.
-target <- c("poor_npl1", "poor_npl2", "poor_150npl1", "poor_200npl1", "poor_2011_100", "poor_2011_190", "poor_2011_320",
-            "poor_2011_550", "poor_2011_800", "poor_2011_1100", "poor_2011_1500", "poor_2011_2170", "poor_2005_125", 
-            "poor_2005_250", "poor_2005_500", "poor_bottom_20", "poor_bottom_40", "poor_bottom_60", "poor_bottom_80")
+target <- c("poor_npl1", "poor_npl2", "poor_150npl1", "poor_200npl1", 
+            "poor_2011_100", "poor_2011_190", "poor_2011_320", "poor_2011_550", "poor_2011_800", "poor_2011_1100", "poor_2011_1500", "poor_2011_2170",
+            "poor_2005_125", "poor_2005_250", "poor_2005_500", 
+            "poor_bottom_20", "poor_bottom_40", "poor_bottom_60", "poor_bottom_80")
 target <- target_base
 
-weight_name <- "hh_weight"  #Column name for household weight
+weight_name <- "hh_weight" #Column name for household weight
 ID <- "hh_id"
 
 # All the candidate features should be in adjacent columns (CHANGE THE FIRST AND LAST COLUMN)
 candidate_feature_first_col <- 28 #the column number of the first candidate indicator
-candidate_feature_last_col <- 55 #the column number of the last candidate indicator
+candidate_feature_last_col <- 56 #the column number of the last candidate indicator
 region_number <- 4 #Number of regions in question_key
 sub_question_number <- 1 #identify unique question number (from the key file) for the subnational questions
 numb_questions <- c(10) # Number of questions that are to be selected by the LASSO
@@ -41,9 +42,9 @@ prop_trained <- 0.66 # Proportion of the sample used for the training data set (
 alpha_i <-  0.5 # Ridge regression does not do variable selection (so alpha set to > 0)
 cv_nfold <- 10 #Number of folds used in the cross validation elastic nets
 bootstrap_size_selection <- 1000 #Number of times we bootstrap to select indicators
-bootstrap_sample <- 1000 #Number of obs the bootstrap draws randomly per iteration
+bootstrap_sample <- 2000 #Number of obs the bootstrap draws randomly per iteration
 bootstrap_error_reps <- 1000 #Number of times we bootstrap to calculate error rates
-bootstrap_sample_size <- c(100,500) #Sample sizes for bootstrapping errors - Targetting error. 
+bootstrap_sample_size <- c(100,500) #Sample sizes for bootstrapping errors - Targetting error.
 bootstrap_error_sample_size <- seq(from = 100, to = 500, by = 50) #Sample sizes for bootstrapping errors - Poverty rates
 
 ##############################################################################
@@ -90,7 +91,9 @@ boot_sample_frac <- bootstrap_sample/nrow(train_data) #Calculate the sample frac
 test_data <- split_data$test_data
 # B: Construct a penalty factor vector that is 0 for the subnational question and 1 for other variables
 penalty_vector_full <- rep(1, times = nrow(question_key)) 
-penalty_vector_full[1:region_number]<-0
+penalty_vector_full[1:(region_number+1)]<-0
+penalty_vector_full_2 <- rep(1, times = nrow(question_key))
+penalty_vector_full_2[1:region_number+1]<-0
 
 ################# STEP 3: Choose candidate indicators 
 for (nq in numb_questions) { 
@@ -156,12 +159,13 @@ for (nq in numb_questions) {
                                           stable_coef_names = coefficient_names_train, question_key = question_key)
     
     scorecard_train <- scorecardtrain[[1]] #Store rescaled and rounded coefficients
-    score_train <- scorecardtrain[[2]] #Store scores for all respondents in the trainning set
+    score_train <- round(scorecardtrain[[2]], digits = 0) #Store scores for all respondents in the trainning set
+    score_train[score_train<1] <- 1
     # Scorecards and score for the test set: substract minimum absolute score, rescales, rounds.
     scorecardtest <- scorecard_function(data = test_data, y= pov, coef_vector = coefficient_train,
                                         stable_coef_names = coefficient_names_train, question_key = question_key)
-    score_test <- scorecardtest[[2]] #Store scores for all respondents in the test set 
-    
+    score_test <- round(scorecardtest[[2]], digits = 0) #Store scores for all respondents in the test set
+    score_test[score_test<1] <- 1
     ################# STEP 7: Predict fitted values based on the elastic-net model and create a function that maps the relationship 
     # of these fitted values vs the adjusted values that go from 0 to 100 that we created
     # Based on the sigmoid function (the one used in logit and the elastic net regression), estimate probabilities for the trainning set
@@ -246,7 +250,7 @@ for (nq in numb_questions) {
     selected_questions_survey <- bootstrap_variable_select(data_boot = survey_data,
                                                            bootstrap_sample_fraction = boot_sample_frac, bootstrap_reps = bootstrap_size_selection,
                                                            question_key = question_key, y= target_base, numb_questions=nq, alpha = a,
-                                                           weight= weight_name, penalty_vector= penalty_vector_full)
+                                                           weight= weight_name, penalty_vector= penalty_vector_full_2)
     
     #It runs the data on a set of different alphas to see which minimizes error.
     #It runs it a set of times so that lambda is not dependent of the randomnsess of the ten-fold cross-validation error.
@@ -316,20 +320,22 @@ for (nq in numb_questions) {
   print(start_time-end_time)    
 }
 
-
 ################# STEP 7: Predict fitted values based on the elastic-net model and create a function that maps the relationship 
 # of these fitted values vs the adjusted values that go from 0 to 100 that we created
 # Based on the sigmoid function (the one used in logit and the elastic net regression), estimate probabilities for the trainning set
 predicted_prob_full <- prediction_function(data = survey_data, y = pov, glm_object = stable_fit_survey,
-                                            stable_coef_names = coefficient_names_survey, lambda = selected_lambda, type = "response")
+                                           stable_coef_names = coefficient_names_survey, lambda = selected_lambda, type = "response")
 
+score_survey <- round(score_survey, 0)
+score_survey[score_survey<1] <- 1
 lookup_data_full <-  data.frame(cbind(score_survey, predicted_prob_full)) # Construct the Lookup Table that maps scores to probabilities
 lookup_table_full <- as.data.frame(as.matrix(create_lookup_table(lookup_data_full)))  # Use the training data relationship as the basis of the lookup table
 
 ################# STEP 8: Etimate prediction errors on the test set (targetting and poverty rates)
-pred_score_pr_full <- prob_lookup_table(lookup_table_full,score_survey) #These are the predicted probabilities from the transformed/simplified model we created
-full_data_pr <- cbind(survey_data,pred_score_pr_full) # Merge model predictions with test data
+pred_score_pr_full <- prob_lookup_table(lookup_table_full, score_survey) #These are the predicted probabilities from the transformed/simplified model we created
+full_data_pr <- cbind(survey_data, pred_score_pr_full) # Merge model predictions with test data
 
 full_data_pr <- full_data_pr[, c("hh_id", "hh_weight", "urban", "poor_npl1", "pred_score_pr_full")]
 write.csv(full_data_pr,  file = paste(results, "//", "Predicted_scores_", nq, "q_", "NPL1.csv", sep=""), row.names = T)
+
 

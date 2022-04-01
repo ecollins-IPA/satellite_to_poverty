@@ -1,0 +1,15 @@
+"","stable_coef_names","poor_npl1"
+"1","hh_light1",10
+"2","hh_roof1",10
+"3","hh_size1",11
+"4","hh_size2",10
+"5","radiance_around_1_kms",9
+"6","radiance_around_1_kms_sq",12
+"7","radiance_around_10_kms",5
+"8","radiance_around_10_kms_sq",16
+"9","radiance_around_5_kms",17
+"10","radiance_around_5_kms_sq",0
+"11","region1",10
+"12","region2",10
+"13","region4",10
+"14","region5",10

@@ -24,24 +24,32 @@ library(extrafont)
 library(gridExtra)
 library(paletteer) 
 library(hrbrthemes)
+library(haven)
 
 
 # *****************************************************************************
 #### 02_Load_data ####
 # *****************************************************************************
   setwd("/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/")
+
+  #----Survey data----
+  survey_data<-read_dta("02 Data/02 Clean/LSMS/MASTER_ESS3_Ethiopia.dta")
   
   #----No radiance scores----
   mod0<-read.csv("08 Results/LSMS/PovRate_Errors_10q_ALLpovlines.csv")
   tod0<-read.csv("08 Results/LSMS/Target_Errors_10q_ALLpovlines.csv")
+  pred0<-read.csv("08 Results/LSMS/Predicted_scores_10q_NPL1.csv")
   
   #----Regions and radiance unpenalized----
   mod1<-read.csv("08 Results/Luminosity/Regions and radiance unpenalized/PovRate_Errors_10q_ALLpovlines.csv")
   tod1<-read.csv("08 Results/Luminosity/Regions and radiance unpenalized/Target_Errors_10q_ALLpovlines.csv")
+  pred1<-read.csv("08 Results/Luminosity/Predicted_scores_10q_NPL1.csv")
   
   #----Radiance penalized, but calibration unpenalized----
   mod2<-read.csv("08 Results/Luminosity/Regions unpenalized 2/PovRate_Errors_10q_ALLpovlines.csv")
   tod2<-read.csv("08 Results/Luminosity/Regions unpenalized 2/Target_Errors_10q_ALLpovlines.csv")
+  
+  pred2<-read.csv("08 Results/RWI/Predicted_scores_10q_NPL1.csv")
   
 # *****************************************************************************
 #### 03_Arrange_data####
@@ -159,6 +167,100 @@ library(hrbrthemes)
     mutate(type="Inclusion error")
   
   tods_urb<-rbind(tods_urb_excl, tods_urb_incl)
+  
+  #----Predicted probabilities----
+  regions<-survey_data[, c("hh_id", "region")]
+  pred0<-merge(pred0, regions, by="hh_id")
+  pred0<-pred0%>%
+    mutate(urban=case_when(urban==0 ~ "Rural",
+                           urban==1 ~ "Urban"),
+           region=case_when(region==1 ~ "Amhara",
+                            region==2 ~ "Oromiya",
+                            region==3 ~ "SNNP",
+                            region==4 ~ "Tigray",
+                            region==5 ~ "Other regions"),
+           urban_poor=case_when(urban=="Rural" & poor_npl1==0 ~ "Rural, Non-Poor",
+                                urban=="Rural" & poor_npl1==1 ~ "Rural, Poor",
+                                urban=="Urban" & poor_npl1==0 ~ "Urban, Non-Poor",
+                                urban=="Urban" & poor_npl1==1 ~ "Urban, Poor"),
+           region_poor=case_when(region=="Amhara" & poor_npl1==0 ~ "Amhara, Non-Poor",
+                                 region=="Amhara" & poor_npl1==1 ~ "Amhara, Poor",
+                                 region=="Oromiya" & poor_npl1==0 ~ "Oromiya, Non-Poor",
+                                 region=="Oromiya" & poor_npl1==1 ~ "Oromiya, Poor",
+                                 region=="SNNP" & poor_npl1==0 ~ "SNNP, Non-Poor",
+                                 region=="SNNP" & poor_npl1==1 ~ "SNNP, Poor",
+                                 region=="Tigray" & poor_npl1==0 ~ "Tigray, Non-Poor",
+                                 region=="Tigray" & poor_npl1==1 ~ "Tigray, Poor",
+                                 region=="Other regions" & poor_npl1==0 ~ "Other regions, Non-Poor",
+                                 region=="Other regions" & poor_npl1==1 ~ "Other regions, Poor"))
+
+  #----Predicted probabilities----
+  regions<-survey_data[, c("hh_id", "region")]
+  pred1<-merge(pred1, regions, by="hh_id")
+  pred1<-pred1%>%
+    mutate(urban=case_when(urban==0 ~ "Rural",
+                           urban==1 ~ "Urban"),
+           region=case_when(region==1 ~ "Amhara",
+                            region==2 ~ "Oromiya",
+                            region==3 ~ "SNNP",
+                            region==4 ~ "Tigray",
+                            region==5 ~ "Other regions"),
+           urban_poor=case_when(urban=="Rural" & poor_npl1==0 ~ "Rural, Non-Poor",
+                                urban=="Rural" & poor_npl1==1 ~ "Rural, Poor",
+                                urban=="Urban" & poor_npl1==0 ~ "Urban, Non-Poor",
+                                urban=="Urban" & poor_npl1==1 ~ "Urban, Poor"),
+           region_poor=case_when(region=="Amhara" & poor_npl1==0 ~ "Amhara, Non-Poor",
+                                 region=="Amhara" & poor_npl1==1 ~ "Amhara, Poor",
+                                 region=="Oromiya" & poor_npl1==0 ~ "Oromiya, Non-Poor",
+                                 region=="Oromiya" & poor_npl1==1 ~ "Oromiya, Poor",
+                                 region=="SNNP" & poor_npl1==0 ~ "SNNP, Non-Poor",
+                                 region=="SNNP" & poor_npl1==1 ~ "SNNP, Poor",
+                                 region=="Tigray" & poor_npl1==0 ~ "Tigray, Non-Poor",
+                                 region=="Tigray" & poor_npl1==1 ~ "Tigray, Poor",
+                                 region=="Other regions" & poor_npl1==0 ~ "Other regions, Non-Poor",
+                                 region=="Other regions" & poor_npl1==1 ~ "Other regions, Poor"))
+
+  #----Predicted probabilities----
+  regions<-survey_data[, c("hh_id", "region")]
+  pred2<-merge(pred2, regions, by="hh_id")
+  pred2<-pred2%>%
+    mutate(urban=case_when(urban==0 ~ "Rural",
+                           urban==1 ~ "Urban"),
+           region=case_when(region==1 ~ "Amhara",
+                            region==2 ~ "Oromiya",
+                            region==3 ~ "SNNP",
+                            region==4 ~ "Tigray",
+                            region==5 ~ "Other regions"),
+           urban_poor=case_when(urban=="Rural" & poor_npl1==0 ~ "Rural, Non-Poor",
+                                urban=="Rural" & poor_npl1==1 ~ "Rural, Poor",
+                                urban=="Urban" & poor_npl1==0 ~ "Urban, Non-Poor",
+                                urban=="Urban" & poor_npl1==1 ~ "Urban, Poor"),
+           region_poor=case_when(region=="Amhara" & poor_npl1==0 ~ "Amhara, Non-Poor",
+                                 region=="Amhara" & poor_npl1==1 ~ "Amhara, Poor",
+                                 region=="Oromiya" & poor_npl1==0 ~ "Oromiya, Non-Poor",
+                                 region=="Oromiya" & poor_npl1==1 ~ "Oromiya, Poor",
+                                 region=="SNNP" & poor_npl1==0 ~ "SNNP, Non-Poor",
+                                 region=="SNNP" & poor_npl1==1 ~ "SNNP, Poor",
+                                 region=="Tigray" & poor_npl1==0 ~ "Tigray, Non-Poor",
+                                 region=="Tigray" & poor_npl1==1 ~ "Tigray, Poor",
+                                 region=="Other regions" & poor_npl1==0 ~ "Other regions, Non-Poor",
+                                 region=="Other regions" & poor_npl1==1 ~ "Other regions, Poor"))
+  
+  pred0$features <- "LSMS features"
+  pred1$features <- "LSMS + Radiance"
+  pred2$features <- "LSMS + RWI"
+  
+  pred <- rbind(pred0, pred1, pred2)
+  
+  pred<-pred%>%
+    mutate(feature_poor = case_when(features=="LSMS features" & poor_npl1==0 ~ "LSMS, Non-Poor",
+                                    features=="LSMS features" & poor_npl1==1 ~ "LSMS, Poor",
+                                    features=="LSMS + Radiance" & poor_npl1==0 ~ "Radiance, Non-Poor",
+                                    features=="LSMS + Radiance" & poor_npl1==1 ~ "Radiance, Poor",
+                                    features=="LSMS + RWI" & poor_npl1==0 ~ "RWI, Non-Poor",
+                                    features=="LSMS + RWI" & poor_npl1==1 ~ "RWI, Poor"))
+  
+  
   
 # *****************************************************************************
 #### 04_PLOTS ####
@@ -382,4 +484,354 @@ library(hrbrthemes)
       ggsave(paste0("06 Figures/02 Luminosity/", "01", "_", "target_error_urban", ".jpeg"), 
              width = 10, height = 6)
     
-    
+  #----Predicted probabilities Box Plot----
+  pred_region <- pred0 %>%
+    ggplot( aes(x=region_poor, y=pred_score_pr_full, fill=region_poor)) +
+    geom_boxplot() +
+    scale_fill_manual(values=c("#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF")) +
+    scale_x_discrete(labels=c("     Amhara", " ", "     Oromiya", " ", "      SNNP", " ", "     Tigray", " ", "  Other regions", " ")) +
+    theme_minimal() +
+    theme(plot.title = element_text(face = "bold",
+                                    size = 20,
+                                    family = "Arial"),
+          plot.subtitle = element_text(size = 12,
+                                       face = "plain", 
+                                       family = "Arial"),
+          plot.caption = element_text(hjust = 0, 
+                                      face = "plain", 
+                                      family = "Arial",
+                                      size = 8,
+                                      colour = "#777777"),
+          panel.background = element_rect(fill = "white", 
+                                          colour = "white", 
+                                          size = 0.15, 
+                                          linetype = "solid"),
+          panel.grid.major = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          panel.grid.minor = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          axis.title.x = (element_text(size = 16,
+                                       family = "Arial")),
+          axis.title.y = (element_text(size =16,
+                                       family = "Arial")),
+          element_line(linetype = "dotted",
+                       colour = "gray99",
+                       size = .1),
+          axis.text.x = element_text(angle = 0,
+                                     hjust = 0.5,
+                                     size = 12, 
+                                     family = ""),
+          axis.text.y = element_text(size = 12,
+                                     family = ""),
+          legend.position = "none",
+          legend.title = element_blank()) +
+    labs(title = "Predicted probability of poverty across regions and poverty status",
+         subtitle = "National Poverty Line - Ethiopia 2015-16 (Full sample)",
+         x = " ",
+         y = "Probability of Poverty",
+         caption = paste(" ")) +
+    ggsave(paste0("06 Figures/01 LSMS/", "01", "_", "pred_prob_region", ".jpeg"), 
+           width = 10, height = 6)
+  
+  pred_urban <- pred0 %>%
+    ggplot( aes(x=urban_poor, y=pred_score_pr_full, fill=urban_poor)) +
+    geom_boxplot() +
+    scale_fill_manual(values=c("#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF")) +
+    theme_minimal() +
+    theme(plot.title = element_text(face = "bold",
+                                    size = 20,
+                                    family = "Arial"),
+          plot.subtitle = element_text(size = 12,
+                                       face = "plain", 
+                                       family = "Arial"),
+          plot.caption = element_text(hjust = 0, 
+                                      face = "plain", 
+                                      family = "Arial",
+                                      size = 8,
+                                      colour = "#777777"),
+          panel.background = element_rect(fill = "white", 
+                                          colour = "white", 
+                                          size = 0.15, 
+                                          linetype = "solid"),
+          panel.grid.major = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          panel.grid.minor = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          axis.title.x = (element_text(size = 16,
+                                       family = "Arial")),
+          axis.title.y = (element_text(size =16,
+                                       family = "Arial")),
+          element_line(linetype = "dotted",
+                       colour = "gray99",
+                       size = .1),
+          axis.text.x = element_text(angle = 0,
+                                     hjust = 0.5,
+                                     size = 12, 
+                                     family = ""),
+          axis.text.y = element_text(size = 12,
+                                     family = ""),
+          legend.position = "none",
+          legend.title = element_blank()) +
+    labs(title = "Predicted probability of poverty across regions and poverty status",
+         subtitle = "National Poverty Line - Ethiopia 2015-16 (Full sample)",
+         x = " ",
+         y = "Probability of Poverty",
+         caption = paste(" ")) +
+    ggsave(paste0("06 Figures/01 LSMS/", "01", "_", "pred_prob_region", ".jpeg"), 
+           width = 10, height = 6)
+  
+  #----Predicted probabilities Box Plot----
+  pred_region_lum <- pred1 %>%
+    ggplot( aes(x=region_poor, y=pred_score_pr_full, fill=region_poor)) +
+    geom_boxplot() +
+    scale_fill_manual(values=c("#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF")) +
+    scale_x_discrete(labels=c("     Amhara", " ", "     Oromiya", " ", "      SNNP", " ", "     Tigray", " ", "  Other regions", " ")) +
+    theme_minimal() +
+    theme(plot.title = element_text(face = "bold",
+                                    size = 20,
+                                    family = "Arial"),
+          plot.subtitle = element_text(size = 12,
+                                       face = "plain", 
+                                       family = "Arial"),
+          plot.caption = element_text(hjust = 0, 
+                                      face = "plain", 
+                                      family = "Arial",
+                                      size = 8,
+                                      colour = "#777777"),
+          panel.background = element_rect(fill = "white", 
+                                          colour = "white", 
+                                          size = 0.15, 
+                                          linetype = "solid"),
+          panel.grid.major = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          panel.grid.minor = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          axis.title.x = (element_text(size = 16,
+                                       family = "Arial")),
+          axis.title.y = (element_text(size =16,
+                                       family = "Arial")),
+          element_line(linetype = "dotted",
+                       colour = "gray99",
+                       size = .1),
+          axis.text.x = element_text(angle = 0,
+                                     hjust = 0.5,
+                                     size = 12, 
+                                     family = ""),
+          axis.text.y = element_text(size = 12,
+                                     family = ""),
+          legend.position = "none",
+          legend.title = element_blank()) +
+    labs(title = "Predicted probability of poverty across regions and poverty status",
+         subtitle = "National Poverty Line - Ethiopia 2015-16 (Full sample)",
+         x = " ",
+         y = "Probability of Poverty",
+         caption = paste(" ")) +
+    ggsave(paste0("06 Figures/02 Luminosity/", "01", "_", "pred_prob_region", ".jpeg"), 
+           width = 10, height = 6)
+  
+  pred_urban_lum <- pred1 %>%
+    ggplot( aes(x=urban_poor, y=pred_score_pr_full, fill=urban_poor)) +
+    geom_boxplot() +
+    scale_fill_manual(values=c("#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF")) +
+    theme_minimal() +
+    theme(plot.title = element_text(face = "bold",
+                                    size = 20,
+                                    family = "Arial"),
+          plot.subtitle = element_text(size = 12,
+                                       face = "plain", 
+                                       family = "Arial"),
+          plot.caption = element_text(hjust = 0, 
+                                      face = "plain", 
+                                      family = "Arial",
+                                      size = 8,
+                                      colour = "#777777"),
+          panel.background = element_rect(fill = "white", 
+                                          colour = "white", 
+                                          size = 0.15, 
+                                          linetype = "solid"),
+          panel.grid.major = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          panel.grid.minor = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          axis.title.x = (element_text(size = 16,
+                                       family = "Arial")),
+          axis.title.y = (element_text(size =16,
+                                       family = "Arial")),
+          element_line(linetype = "dotted",
+                       colour = "gray99",
+                       size = .1),
+          axis.text.x = element_text(angle = 0,
+                                     hjust = 0.5,
+                                     size = 12, 
+                                     family = ""),
+          axis.text.y = element_text(size = 12,
+                                     family = ""),
+          legend.position = "none",
+          legend.title = element_blank()) +
+    labs(title = "Predicted probability of poverty across regions and poverty status",
+         subtitle = "National Poverty Line - Ethiopia 2015-16 (Full sample)",
+         x = " ",
+         y = "Probability of Poverty",
+         caption = paste(" ")) +
+    ggsave(paste0("06 Figures/02 Luminosity/", "01", "_", "pred_prob_region", ".jpeg"), 
+           width = 10, height = 6)
+  
+  
+  #----Predicted probabilities Box Plot----
+  pred_region_rwi <- pred2 %>%
+    ggplot( aes(x=region_poor, y=pred_score_pr_full, fill=region_poor)) +
+    geom_boxplot() +
+    scale_fill_manual(values=c("#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF")) +
+    scale_x_discrete(labels=c("     Amhara", " ", "     Oromiya", " ", "      SNNP", " ", "     Tigray", " ", "  Other regions", " ")) +
+    theme_minimal() +
+    theme(plot.title = element_text(face = "bold",
+                                    size = 20,
+                                    family = "Arial"),
+          plot.subtitle = element_text(size = 12,
+                                       face = "plain", 
+                                       family = "Arial"),
+          plot.caption = element_text(hjust = 0, 
+                                      face = "plain", 
+                                      family = "Arial",
+                                      size = 8,
+                                      colour = "#777777"),
+          panel.background = element_rect(fill = "white", 
+                                          colour = "white", 
+                                          size = 0.15, 
+                                          linetype = "solid"),
+          panel.grid.major = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          panel.grid.minor = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          axis.title.x = (element_text(size = 16,
+                                       family = "Arial")),
+          axis.title.y = (element_text(size =16,
+                                       family = "Arial")),
+          element_line(linetype = "dotted",
+                       colour = "gray99",
+                       size = .1),
+          axis.text.x = element_text(angle = 0,
+                                     hjust = 0.5,
+                                     size = 12, 
+                                     family = ""),
+          axis.text.y = element_text(size = 12,
+                                     family = ""),
+          legend.position = "none",
+          legend.title = element_blank()) +
+    labs(title = "Predicted probability of poverty across regions and poverty status",
+         subtitle = "National Poverty Line - Ethiopia 2015-16 (Full sample)",
+         x = " ",
+         y = "Probability of Poverty",
+         caption = paste(" ")) +
+    ggsave(paste0("06 Figures/03 RWI/", "01", "_", "pred_prob_region", ".jpeg"), 
+           width = 10, height = 6)
+  
+  pred_urban_rwi <- pred2 %>%
+    ggplot( aes(x=urban_poor, y=pred_score_pr_full, fill=urban_poor)) +
+    geom_boxplot() +
+    scale_fill_manual(values=c("#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF")) +
+    theme_minimal() +
+    theme(plot.title = element_text(face = "bold",
+                                    size = 20,
+                                    family = "Arial"),
+          plot.subtitle = element_text(size = 12,
+                                       face = "plain", 
+                                       family = "Arial"),
+          plot.caption = element_text(hjust = 0, 
+                                      face = "plain", 
+                                      family = "Arial",
+                                      size = 8,
+                                      colour = "#777777"),
+          panel.background = element_rect(fill = "white", 
+                                          colour = "white", 
+                                          size = 0.15, 
+                                          linetype = "solid"),
+          panel.grid.major = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          panel.grid.minor = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          axis.title.x = (element_text(size = 16,
+                                       family = "Arial")),
+          axis.title.y = (element_text(size =16,
+                                       family = "Arial")),
+          element_line(linetype = "dotted",
+                       colour = "gray99",
+                       size = .1),
+          axis.text.x = element_text(angle = 0,
+                                     hjust = 0.5,
+                                     size = 12, 
+                                     family = ""),
+          axis.text.y = element_text(size = 12,
+                                     family = ""),
+          legend.position = "none",
+          legend.title = element_blank()) +
+    labs(title = "Predicted probability of poverty across regions and poverty status",
+         subtitle = "National Poverty Line - Ethiopia 2015-16 (Full sample)",
+         x = " ",
+         y = "Probability of Poverty",
+         caption = paste(" ")) +
+    ggsave(paste0("06 Figures/03 RWI/", "01", "_", "pred_prob_region", ".jpeg"), 
+           width = 10, height = 6)
+  
+  #----Predicted probabilities Box Plot----
+  pred_full <- pred %>%
+    ggplot( aes(x=feature_poor, y=pred_score_pr_full, fill=feature_poor)) +
+    geom_boxplot() +
+    scale_fill_manual(values=c("#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF")) +
+    scale_x_discrete(labels=c("     LSMS features", " ", "      LSMS + Radiance", " ", "       LSMS + RWI", " ")) +
+    theme_minimal() +
+    theme(plot.title = element_text(face = "bold",
+                                    size = 20,
+                                    family = "Arial"),
+          plot.subtitle = element_text(size = 12,
+                                       face = "plain", 
+                                       family = "Arial"),
+          plot.caption = element_text(hjust = 0, 
+                                      face = "plain", 
+                                      family = "Arial",
+                                      size = 8,
+                                      colour = "#777777"),
+          panel.background = element_rect(fill = "white", 
+                                          colour = "white", 
+                                          size = 0.15, 
+                                          linetype = "solid"),
+          panel.grid.major = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          panel.grid.minor = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          axis.title.x = (element_text(size = 16,
+                                       family = "Arial")),
+          axis.title.y = (element_text(size =16,
+                                       family = "Arial")),
+          element_line(linetype = "dotted",
+                       colour = "gray99",
+                       size = .1),
+          axis.text.x = element_text(angle = 0,
+                                     hjust = 0.5,
+                                     size = 12, 
+                                     family = ""),
+          axis.text.y = element_text(size = 12,
+                                     family = ""),
+          legend.position = "none",
+          legend.title = element_blank()) +
+    labs(title = "Predicted probability of poverty across regions and poverty status",
+         subtitle = "National Poverty Line - Ethiopia 2015-16 (Full sample)",
+         x = " ",
+         y = "Probability of Poverty",
+         caption = paste(" ")) +
+    ggsave(paste0("06 Figures/03 RWI/", "01", "_", "pred_prob_region", ".jpeg"), 
+           width = 10, height = 6)
