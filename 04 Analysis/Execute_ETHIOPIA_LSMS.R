@@ -34,7 +34,7 @@ candidate_feature_first_col <- 28 #the column number of the first candidate indi
 candidate_feature_last_col <- 55 #the column number of the last candidate indicator
 region_number <- 4 #Number of regions in question_key
 sub_question_number <- 1 #identify unique question number (from the key file) for the subnational questions
-numb_questions <- c(10) # Number of questions that are to be selected by the LASSO
+numb_questions <- c(30) # Number of questions that are to be selected by the LASSO
 prop_trained <- 0.66 # Proportion of the sample used for the training data set (the final scorecard is based on the entire survey)
 
 #Bootstrapping options (shouldn't change them)

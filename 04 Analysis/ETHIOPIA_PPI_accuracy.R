@@ -48,8 +48,14 @@ library(haven)
   #----Radiance penalized, but calibration unpenalized----
   mod2<-read.csv("08 Results/Luminosity/Regions unpenalized 2/PovRate_Errors_10q_ALLpovlines.csv")
   tod2<-read.csv("08 Results/Luminosity/Regions unpenalized 2/Target_Errors_10q_ALLpovlines.csv")
-  
   pred2<-read.csv("08 Results/RWI/Predicted_scores_10q_NPL1.csv")
+  
+  #----Predicted Scored by Type of Model----
+  pred_ur_10<-read.csv("08 Results/LSMS/01 UR 10Q/Predicted_scores_10q_NPL1.csv")
+  pred_ur_20<-read.csv("08 Results/LSMS/02 UR 20Q/Predicted_scores_20q_NPL1.csv")
+  pred_nur_10<-read.csv("08 Results/LSMS/03 No UR 10Q/Predicted_scores_10q_NPL1.csv")
+  pred_nur_20<-read.csv("08 Results/LSMS/04 No UR 20Q/Predicted_scores_20q_NPL1.csv")
+  
   
 # *****************************************************************************
 #### 03_Arrange_data####
@@ -259,6 +265,121 @@ library(haven)
                                     features=="LSMS + Radiance" & poor_npl1==1 ~ "Radiance, Poor",
                                     features=="LSMS + RWI" & poor_npl1==0 ~ "RWI, Non-Poor",
                                     features=="LSMS + RWI" & poor_npl1==1 ~ "RWI, Poor"))
+  
+  
+  #----Predicted probabilities----
+  regions<-survey_data[, c("hh_id", "region")]
+  pred_ur_10<-merge(pred_ur_10, regions, by="hh_id")
+  pred_ur_10<-pred_ur_10%>%
+    mutate(urban=case_when(urban==0 ~ "Rural",
+                           urban==1 ~ "Urban"),
+           region=case_when(region==1 ~ "Amhara",
+                            region==2 ~ "Oromiya",
+                            region==3 ~ "SNNP",
+                            region==4 ~ "Tigray",
+                            region==5 ~ "Other regions"),
+           urban_poor=case_when(urban=="Rural" & poor_npl1==0 ~ "Rural, Non-Poor",
+                                urban=="Rural" & poor_npl1==1 ~ "Rural, Poor",
+                                urban=="Urban" & poor_npl1==0 ~ "Urban, Non-Poor",
+                                urban=="Urban" & poor_npl1==1 ~ "Urban, Poor"),
+           region_poor=case_when(region=="Amhara" & poor_npl1==0 ~ "Amhara, Non-Poor",
+                                 region=="Amhara" & poor_npl1==1 ~ "Amhara, Poor",
+                                 region=="Oromiya" & poor_npl1==0 ~ "Oromiya, Non-Poor",
+                                 region=="Oromiya" & poor_npl1==1 ~ "Oromiya, Poor",
+                                 region=="SNNP" & poor_npl1==0 ~ "SNNP, Non-Poor",
+                                 region=="SNNP" & poor_npl1==1 ~ "SNNP, Poor",
+                                 region=="Tigray" & poor_npl1==0 ~ "Tigray, Non-Poor",
+                                 region=="Tigray" & poor_npl1==1 ~ "Tigray, Poor",
+                                 region=="Other regions" & poor_npl1==0 ~ "Other regions, Non-Poor",
+                                 region=="Other regions" & poor_npl1==1 ~ "Other regions, Poor"))
+  
+  pred_ur_20<-merge(pred_ur_20, regions, by="hh_id")
+  pred_ur_20<-pred_ur_20%>%
+    mutate(urban=case_when(urban==0 ~ "Rural",
+                           urban==1 ~ "Urban"),
+           region=case_when(region==1 ~ "Amhara",
+                            region==2 ~ "Oromiya",
+                            region==3 ~ "SNNP",
+                            region==4 ~ "Tigray",
+                            region==5 ~ "Other regions"),
+           urban_poor=case_when(urban=="Rural" & poor_npl1==0 ~ "Rural, Non-Poor",
+                                urban=="Rural" & poor_npl1==1 ~ "Rural, Poor",
+                                urban=="Urban" & poor_npl1==0 ~ "Urban, Non-Poor",
+                                urban=="Urban" & poor_npl1==1 ~ "Urban, Poor"),
+           region_poor=case_when(region=="Amhara" & poor_npl1==0 ~ "Amhara, Non-Poor",
+                                 region=="Amhara" & poor_npl1==1 ~ "Amhara, Poor",
+                                 region=="Oromiya" & poor_npl1==0 ~ "Oromiya, Non-Poor",
+                                 region=="Oromiya" & poor_npl1==1 ~ "Oromiya, Poor",
+                                 region=="SNNP" & poor_npl1==0 ~ "SNNP, Non-Poor",
+                                 region=="SNNP" & poor_npl1==1 ~ "SNNP, Poor",
+                                 region=="Tigray" & poor_npl1==0 ~ "Tigray, Non-Poor",
+                                 region=="Tigray" & poor_npl1==1 ~ "Tigray, Poor",
+                                 region=="Other regions" & poor_npl1==0 ~ "Other regions, Non-Poor",
+                                 region=="Other regions" & poor_npl1==1 ~ "Other regions, Poor"))
+  pred_nur_10<-merge(pred_nur_10, regions, by="hh_id")
+  pred_nur_10<-pred_nur_10%>%
+    mutate(urban=case_when(urban==0 ~ "Rural",
+                           urban==1 ~ "Urban"),
+           region=case_when(region==1 ~ "Amhara",
+                            region==2 ~ "Oromiya",
+                            region==3 ~ "SNNP",
+                            region==4 ~ "Tigray",
+                            region==5 ~ "Other regions"),
+           urban_poor=case_when(urban=="Rural" & poor_npl1==0 ~ "Rural, Non-Poor",
+                                urban=="Rural" & poor_npl1==1 ~ "Rural, Poor",
+                                urban=="Urban" & poor_npl1==0 ~ "Urban, Non-Poor",
+                                urban=="Urban" & poor_npl1==1 ~ "Urban, Poor"),
+           region_poor=case_when(region=="Amhara" & poor_npl1==0 ~ "Amhara, Non-Poor",
+                                 region=="Amhara" & poor_npl1==1 ~ "Amhara, Poor",
+                                 region=="Oromiya" & poor_npl1==0 ~ "Oromiya, Non-Poor",
+                                 region=="Oromiya" & poor_npl1==1 ~ "Oromiya, Poor",
+                                 region=="SNNP" & poor_npl1==0 ~ "SNNP, Non-Poor",
+                                 region=="SNNP" & poor_npl1==1 ~ "SNNP, Poor",
+                                 region=="Tigray" & poor_npl1==0 ~ "Tigray, Non-Poor",
+                                 region=="Tigray" & poor_npl1==1 ~ "Tigray, Poor",
+                                 region=="Other regions" & poor_npl1==0 ~ "Other regions, Non-Poor",
+                                 region=="Other regions" & poor_npl1==1 ~ "Other regions, Poor"))
+  pred_nur_20<-merge(pred_nur_20, regions, by="hh_id")
+  pred_nur_20<-pred_nur_20%>%
+    mutate(urban=case_when(urban==0 ~ "Rural",
+                           urban==1 ~ "Urban"),
+           region=case_when(region==1 ~ "Amhara",
+                            region==2 ~ "Oromiya",
+                            region==3 ~ "SNNP",
+                            region==4 ~ "Tigray",
+                            region==5 ~ "Other regions"),
+           urban_poor=case_when(urban=="Rural" & poor_npl1==0 ~ "Rural, Non-Poor",
+                                urban=="Rural" & poor_npl1==1 ~ "Rural, Poor",
+                                urban=="Urban" & poor_npl1==0 ~ "Urban, Non-Poor",
+                                urban=="Urban" & poor_npl1==1 ~ "Urban, Poor"),
+           region_poor=case_when(region=="Amhara" & poor_npl1==0 ~ "Amhara, Non-Poor",
+                                 region=="Amhara" & poor_npl1==1 ~ "Amhara, Poor",
+                                 region=="Oromiya" & poor_npl1==0 ~ "Oromiya, Non-Poor",
+                                 region=="Oromiya" & poor_npl1==1 ~ "Oromiya, Poor",
+                                 region=="SNNP" & poor_npl1==0 ~ "SNNP, Non-Poor",
+                                 region=="SNNP" & poor_npl1==1 ~ "SNNP, Poor",
+                                 region=="Tigray" & poor_npl1==0 ~ "Tigray, Non-Poor",
+                                 region=="Tigray" & poor_npl1==1 ~ "Tigray, Poor",
+                                 region=="Other regions" & poor_npl1==0 ~ "Other regions, Non-Poor",
+                                 region=="Other regions" & poor_npl1==1 ~ "Other regions, Poor"))
+  
+  
+  pred_ur_10$features <- "UR (10Q)"
+  pred_ur_20$features <- "UR (20Q)"
+  pred_nur_10$features <- "No UR (10Q)"
+  pred_nur_20$features <- "No UR (20Q)"
+  
+  pred_nur <- rbind(pred_ur_10, pred_ur_20, pred_nur_10, pred_nur_20)
+  
+  pred_nur<-pred_nur%>%
+    mutate(feature_poor = case_when(features=="UR (10Q)" & poor_npl1==0 ~ "UR (10Q), Non-Poor",
+                                    features=="UR (10Q)" & poor_npl1==1 ~ "UR (10Q), Poor",
+                                    features=="UR (20Q)" & poor_npl1==0 ~ "UR (20Q), Non-Poor",
+                                    features=="UR (20Q)" & poor_npl1==1 ~ "UR (20Q), Poor",
+                                    features=="No UR (10Q)" & poor_npl1==0 ~ "No UR (10Q), Non-Poor",
+                                    features=="No UR (10Q)" & poor_npl1==1 ~ "No UR (10Q), Poor",
+                                    features=="No UR (20Q)" & poor_npl1==0 ~ "No UR (20Q), Non-Poor",
+                                    features=="No UR (20Q)" & poor_npl1==1 ~ "No UR (20Q), Poor"))
   
   
   
@@ -834,4 +955,57 @@ library(haven)
          y = "Probability of Poverty",
          caption = paste(" ")) +
     ggsave(paste0("06 Figures/03 RWI/", "01", "_", "pred_prob_region", ".jpeg"), 
+           width = 10, height = 6)
+  
+  
+  
+  #----Predicted probabilities Box Plot----
+  pred_full_nur <- pred_nur %>%
+    ggplot( aes(x=feature_poor, y=pred_score_pr_full, fill=feature_poor)) +
+    geom_boxplot() +
+    scale_fill_manual(values=c("#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF", "#A0CBE8FF", "#8CD17DFF")) +
+    scale_x_discrete(labels=c("              UR (10Q)", " ", "              UR (20Q)", " ", "               No UR (10Q)", " ", "               No UR (20Q)", " ")) +
+    theme_minimal() +
+    theme(plot.title = element_text(face = "bold",
+                                    size = 20,
+                                    family = "Arial"),
+          plot.subtitle = element_text(size = 12,
+                                       face = "plain", 
+                                       family = "Arial"),
+          plot.caption = element_text(hjust = 0, 
+                                      face = "plain", 
+                                      family = "Arial",
+                                      size = 8,
+                                      colour = "#777777"),
+          panel.background = element_rect(fill = "white", 
+                                          colour = "white", 
+                                          size = 0.15, 
+                                          linetype = "solid"),
+          panel.grid.major = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          panel.grid.minor = element_line(size = 0.15, 
+                                          linetype = 'solid',
+                                          colour = "gray90"), 
+          axis.title.x = (element_text(size = 16,
+                                       family = "Arial")),
+          axis.title.y = (element_text(size =16,
+                                       family = "Arial")),
+          element_line(linetype = "dotted",
+                       colour = "gray99",
+                       size = .1),
+          axis.text.x = element_text(angle = 0,
+                                     hjust = 0.5,
+                                     size = 12, 
+                                     family = ""),
+          axis.text.y = element_text(size = 12,
+                                     family = ""),
+          legend.position = "none",
+          legend.title = element_blank()) +
+    labs(title = "Predicted probability of poverty across regions and poverty status",
+         subtitle = "National Poverty Line - Ethiopia 2015-16 (Full sample)",
+         x = " ",
+         y = "Probability of Poverty",
+         caption = paste(" ")) +
+    ggsave(paste0("06 Figures/", "02", "_", "pred_prob_byUR", ".jpeg"), 
            width = 10, height = 6)

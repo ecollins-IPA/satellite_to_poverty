@@ -30,6 +30,9 @@ global masterdb "MASTER_ESS3_Ethiopia.dta"
 global ppidb "PPI_Ethiopia_2015-2016.dta"
 global codebook "Codebook_Ethiopia_2015-2016.xls"
 global qkey "Ethiopia15-16_QuestionKEY.csv"
+
+global ppidb_norev "PPI_Ethiopia_2015-2016_norev.dta"
+global qkey_norev "Ethiopia15-16_QuestionKEY_norev.csv"
 ///////////////////////////////////////////
 	
 ******************************************
@@ -607,22 +610,22 @@ save "$clean/$masterdb", replace
 gen urban=(rural!=1)		
 drop rural
 order hh_id-ind_weight urban poor_npl1-hmany331
-
+/*
 * Change UR:
 * Keep only relevant indicators:
 	* Drop indicators that were not selected by the variable selection algorithm.
 	* Drop indicators based on the User Review feedback.
 	keep hh_id-region5 hh_size1 hh_size2 hhead_readwrite1 hhead_attended1 hhead_maxgrade1 consumed181 consumed201 purchased071 purchase061 hh_roof1 hh_kitchen1 hh_toilet1 hh_toiletshared1 hh_toiletshared2 hh_disposal1 hh_light1 hh_cook1 hmany041 hmany042 hmany051 hmany052 hmany061 hmany091 hmany311
 		//Now, we only have 56 variables in  the DB.
-		
-saveold "$clean/$ppidb", replace version(12)
+	*/	
+saveold "$clean/$ppidb_norev", replace version(12)
 
 				************************************************
 				************************************************
 				*******Arrange for question key CSV file******** After changing the globals: this code should run without any further changes
 				************************************************
 				************************************************
-				u "$clean/$ppidb", clear
+				u "$clean/$ppidb_norev", clear
 				
 				*************To customize:*****************
 				///////////////////////////////////////////
@@ -662,4 +665,4 @@ saveold "$clean/$ppidb", replace version(12)
 				rename (unique_var_number varname) (unique_q_number variable_name)
 				keep  variable_name unique_q_number
 				order unique_q_number
-				export delimited using "$clean/$qkey",  replace
+				export delimited using "$clean/$qkey_norev.csv",  replace
