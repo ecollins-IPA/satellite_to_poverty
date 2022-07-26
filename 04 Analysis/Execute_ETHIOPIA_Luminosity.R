@@ -5,7 +5,7 @@
 rm(list = ls())
 
 #Change to your working Directory
-root = "/Users/manuelarias/Library/CloudStorage/Box-Box/IPA_Programs_PPI/07 PPI Development/ppi-code/"
+root = "../04 Analysis/"
 root2 = "../../satellite_to_poverty_IPA/"
 pre_p = paste(root,"01 Pre-Process/", sep="") ##Pre-process functions are stored here
 fun_l = paste(root,"02 Function Library/", sep="") ##All other functions used in this code are stored here
