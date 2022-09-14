@@ -55,7 +55,7 @@ pause on
 	dis "`path''"
 	
 	*Folder globals
-	gl raw 		"`path'/02 Data/01 Raw/LSMS"
+	gl dta 		"`path'/02 Data/01 Raw/LSMS/Household"
 	gl clean 	"`path'/02 Data/02 Clean/LSMS/Full datasets"
 	gl dos 		"`path'/03 Data Wrangling/Do files"
 	gl temp 	"`path'/02 Data/01 Raw/Temp"

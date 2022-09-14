@@ -25,7 +25,7 @@ di `cdate'
 ************PPI - Indicators**************
 ******************************************
 
-import delimited using "${dta}/cons_agg_w3.csv", clear
+use "${dta}/cons_agg_w3.dta", clear
 
 *Rename variables
 ren pw_w3 hh_weight
@@ -139,7 +139,7 @@ label var poor_2005_500 "$5.00 a day (2005 PPP) poverty line: HH is below this l
 
 	drop povline* con_quint cons_quint relative*
 	
-drop household_id
+drop household_id 
 
 save "${clean}/poverty_ESS3.dta", replace
 
