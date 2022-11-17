@@ -61,6 +61,17 @@ sort household_id2
 order household_id2 hh_wgt urban region hh_size
 save "${temp}/hh_temp.dta", replace
 
+import delimited "$geo/ETH_HouseholdGeovars_y3.csv", clear
+keep household_id2 lat_dd_mod lon_dd_mod
+ren (lat_dd_mod lon_dd_mod) (cluster_lat cluster_lon)
+
+merge m:1 household_id2 using "$temp/hh_temp.dta"
+keep if _merge==2
+order household_id2 hh_wgt cluster_lon cluster_lat
+drop _merge 
+save "${temp}/hh_temp.dta", replace
+
+
 ***************************
 *** 1. Household Roster ***
 ***************************

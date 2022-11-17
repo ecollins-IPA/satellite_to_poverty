@@ -1,4 +1,4 @@
-#****************************************************************# 
+################################################################## 
 # Purpose: Create visualizations for the accuracy of different   #
 #          versions of the PPI
 #                                                                #
@@ -7,7 +7,7 @@
 #   Author: Manuel Cardona                                       # 
 #   e-mail: mcardona@poverty-action.org                          #
 #                                                                #
-#****************************************************************# 
+################################################################## 
 
 rm(list = ls()) # to clean the workspace
 

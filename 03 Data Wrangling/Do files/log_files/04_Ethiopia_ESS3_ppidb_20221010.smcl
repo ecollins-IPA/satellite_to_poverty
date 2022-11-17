@@ -1,0 +1,410 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/03 Data Wrangling/Do files/log_files/04_Ethiopia_ESS3_ppidb_20221010.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}10 Oct 2022, 21:12:04
+{txt}
+{com}. di `cdate'              
+{res}20221010
+{txt}
+{com}.                 
+.                 ************************************************
+.                 ************************************************
+.                 *************Arrange for custom PPI*************        
+.                 ************************************************
+.                 ************************************************
+.                 u "$clean/$masterdb", clear
+{txt}
+{com}.                 set more off
+{txt}
+{com}.                 
+.                 *************To customize:*****************
+.                 
+.                 ///////////////////////////////////////////
+>                 
+.                                 ren hh_consumed1 hh_consumed01
+{res}{txt}
+{com}.                                 ren hh_consumed2 hh_consumed02
+{res}{txt}
+{com}.                                 ren hh_consumed3 hh_consumed03
+{res}{txt}
+{com}.                                 ren hh_purchased1 hh_purchased01
+{res}{txt}
+{com}.                                 ren hh_purchase1 hh_purchase01
+{res}{txt}
+{com}. 
+.                                 
+.                 global vlist "region hh_size hhead_sex hhead_age hh_readwrite hhead_readwrite hh_attended hhead_attended hh_primary hhead_primary hh_spent_schoolfees hh_spent_schoolsup hhead_jobagri hhead_jobbusiness hhead_jobcasual hhead_jobwage hhead_jobunpaid hh_account hh_savings hh_openaccount hh_consumed01 hh_consumed02 hh_consumed03 hh_consumed4 hh_consumed5 hh_consumed6 hh_consumed7 hh_consumed8 hh_consumed9 hh_consumed10 hh_consumed11 hh_consumed12 hh_consumed13 hh_consumed14 hh_consumed15 hh_consumed16 hh_consumed17 hh_consumed18 hh_consumed19 hh_consumed20 hh_consumed21 hh_consumed22 hh_consumed23 hh_consumed24 hh_consumed25 hh_consumed26 hh_consumed27 hh_consumed28 hh_consumed29 hh_consumed30 hh_consumed31 hh_consumed32 hh_purchased01 hh_purchased2 hh_purchased3 hh_purchased5 hh_purchased6 hh_purchased7 hh_purchased8 hh_purchased9 hh_purchased11 hh_purchased12 hh_purchase01 hh_purchase2 hh_purchase3 hh_purchase4 hh_purchase5 hh_purchase6 hh_purchase8 hh_purchase9 hh_purchase10 hh_purchase11 hh_purchase12 hh_status hh_rooms hh_walls hh_roof hh_floor hh_kitchen hh_oventype hh_toilet hh_toiletshared hh_wash hh_disposal hh_water hh_light hh_cook hmany03 hmany04 hmany05 hmany06 hmany08 hmany09 hmany10 hmany13 hmany20 hmany21 hmany26 hmany27 hmany30 hmany33"
+{txt}
+{com}.                 global poor poor_npl1
+{txt}
+{com}.                 global advars "household_id2 hh_wgt urban poor_npl1 poor_npl2 poor_150npl1 poor_200npl1 poor_2011_100 poor_2011_190 poor_2011_320 poor_2011_550 poor_2011_800 poor_2011_1100 poor_2011_1500 poor_2011_2170 poor_2005_125 poor_2005_250 poor_2005_500 poor_bottom_20 poor_bottom_40 poor_bottom_60 poor_bottom_80"
+{txt}
+{com}.                 global tobe_dropped "individual_id2"
+{txt}
+{com}.                 
+.                 
+.                 ///////////////////////////////////////////
+> 
+.                         local to_drop = " "
+{txt}
+{com}.                         local count = 1
+{txt}
+{com}.                         gen name = ""
+{txt}(4,929 missing values generated)
+
+{com}.                         gen orig_name = ""
+{txt}(4,929 missing values generated)
+
+{com}.                         gen label = ""
+{txt}(4,929 missing values generated)
+
+{com}.                         gen value = ""
+{txt}(4,929 missing values generated)
+
+{com}.                         
+.                 *We plug in all the variables we want to dummify: it creates dummies for each category and drops the one with the highest poverty rate.
+.                 foreach var of varlist $vlist{c -(}
+{txt}  2{com}.                         bysort `var': egen mean = mean($poor)  // Poverty rate by category of the variable
+{txt}  3{com}.                         quietly levelsof `var', local(levels)      // Captures all the levels/categories for each variable
+{txt}  4{com}.                         foreach i of local levels {c -(}                                // Loop through all the levels
+{txt}  5{com}.                                 gen `var'`i'= (`var'==`i')                         // Generates a dummy variable for each level
+{txt}  6{com}.                                         *Keep variable names, labels and values for them to be used later
+.                                         while (name[`count']!=""){c -(}                      //Everytime a new variable is looped over the DB re-sorts itself, bc of this we need to make sure that the obs in name that we will replace with the variable name/label/value is in blank. If not, we change the obs.
+{txt}  7{com}.                                                 local count = `count' + 1               //If the observation that we will replace has a value already, we will change the local so we replace it in an additional obs
+{txt}  8{com}.                                                 display "While loop replaced count with `count'"
+{txt}  9{com}.                                         {c )-}
+{txt} 10{com}.                                         quietly: replace name = "`var'`i'" in `count' //Var name in observation #`count' is replaced with the variable name
+{txt} 11{com}.                                         local x : variable label `var' //Variable label is stored
+{txt} 12{com}.                                         quietly: replace label = "`x'" in `count' //Var label in observation #`count' is replaced with the variable label
+{txt} 13{com}.                                         quietly: replace value = "`i'" in `count' //Var value in observation #`count' is replaced with the value of that category
+{txt} 14{com}.                                         quietly: replace orig_name ="`var'" in `count' //Var orig_name in observation #`count' is replaced with the name of the original variable that created this one
+{txt} 15{com}.                                 quietly: su mean                                           // Summary stats for the poverty rate of each category variable
+{txt} 16{com}.                                 global max `: di %4.3f r(max)'         // Keep in a global (max) the maximum poverty rate for a particular category/level
+{txt} 17{com}.                                 quietly su $poor if `var'==`i'     // Summarize the poverty rate for this category/level
+{txt} 18{com}.                                 global max2 `: di %4.3f r(mean)'           // Store the mean poverty rate from this category/level
+{txt} 19{com}.                                 if $max == $max2 {c -(}                                         // If the poverty rate from this category (max2) is the same as the highest poverty rate for any category (max), the code goes ahead and drops that category
+{txt} 20{com}.                                         display "Will drop `var'`i'"               // It displays the category that was dropped
+{txt} 21{com}.                                         local to_drop = ("`var'`i'" + " " + "`to_drop'")
+{txt} 22{com}.                                  {c )-}
+{txt} 23{com}.                                  local count = `count' + 1
+{txt} 24{com}.                         {c )-}
+{txt} 25{com}.                         drop mean `var'                            // Drops variable mean (will be used next time the loop begins) and the original variable that was split into different categories
+{txt} 26{com}.                 {c )-}
+Will drop region3
+Will drop hh_size3
+Will drop hhead_sex1
+Will drop hhead_age2
+Will drop hh_readwrite0
+Will drop hhead_readwrite0
+Will drop hh_attended0
+Will drop hhead_attended0
+Will drop hh_primary0
+Will drop hhead_primary0
+Will drop hh_spent_schoolfees0
+Will drop hh_spent_schoolsup1
+Will drop hhead_jobagri1
+Will drop hhead_jobbusiness0
+Will drop hhead_jobcasual1
+Will drop hhead_jobwage0
+Will drop hhead_jobunpaid0
+Will drop hh_account0
+Will drop hh_savings0
+Will drop hh_openaccount0
+Will drop hh_consumed010
+Will drop hh_consumed020
+Will drop hh_consumed030
+Will drop hh_consumed40
+Will drop hh_consumed50
+Will drop hh_consumed60
+Will drop hh_consumed70
+Will drop hh_consumed80
+Will drop hh_consumed90
+Will drop hh_consumed100
+Will drop hh_consumed110
+Will drop hh_consumed121
+Will drop hh_consumed130
+Will drop hh_consumed141
+Will drop hh_consumed150
+Will drop hh_consumed161
+Will drop hh_consumed170
+Will drop hh_consumed180
+Will drop hh_consumed190
+Will drop hh_consumed200
+Will drop hh_consumed210
+Will drop hh_consumed220
+Will drop hh_consumed230
+Will drop hh_consumed240
+Will drop hh_consumed250
+Will drop hh_consumed261
+Will drop hh_consumed270
+Will drop hh_consumed280
+Will drop hh_consumed290
+Will drop hh_consumed300
+Will drop hh_consumed310
+Will drop hh_consumed320
+Will drop hh_purchased010
+Will drop hh_purchased21
+Will drop hh_purchased30
+Will drop hh_purchased50
+Will drop hh_purchased60
+Will drop hh_purchased70
+Will drop hh_purchased80
+Will drop hh_purchased91
+Will drop hh_purchased110
+Will drop hh_purchased120
+Will drop hh_purchase010
+Will drop hh_purchase20
+Will drop hh_purchase31
+While loop replaced count with 138
+Will drop hh_purchase41
+Will drop hh_purchase50
+Will drop hh_purchase60
+Will drop hh_purchase81
+Will drop hh_purchase90
+Will drop hh_purchase100
+Will drop hh_purchase110
+While loop replaced count with 153
+Will drop hh_purchase121
+Will drop hh_status1
+Will drop hh_rooms1
+Will drop hh_walls0
+Will drop hh_roof0
+Will drop hh_floor0
+Will drop hh_kitchen0
+Will drop hh_oventype0
+Will drop hh_toilet0
+Will drop hh_toiletshared0
+Will drop hh_wash0
+Will drop hh_disposal0
+While loop replaced count with 180
+Will drop hh_light0
+Will drop hh_cook0
+Will drop hmany030
+Will drop hmany040
+While loop replaced count with 191
+Will drop hmany050
+Will drop hmany060
+Will drop hmany080
+Will drop hmany090
+Will drop hmany100
+While loop replaced count with 205
+Will drop hmany130
+Will drop hmany200
+Will drop hmany210
+Will drop hmany260
+Will drop hmany270
+Will drop hmany300
+Will drop hmany330
+{txt}
+{com}.                 drop `to_drop' //Drops all variables that had the highest poverty rates
+{txt}
+{com}.                 display "Variables dropped: `to_drop'" //Lists all the variables that were dropped
+{res}Variables dropped: hmany330 hmany300 hmany270 hmany260 hmany210 hmany200 hmany130 hmany100 hmany090 hmany080 hmany060 hmany050 hmany040 hmany030 hh_cook0 hh_light0 hh_disposal0 hh_wash0 hh_toiletshared0 hh_toilet0 hh_oventype0 hh_kitchen0 hh_floor0 hh_roof0 hh_walls0 hh_rooms1 hh_status1 hh_purchase121 hh_purchase110 hh_purchase100 hh_purchase90 hh_purchase81 hh_purchase60 hh_purchase50 hh_purchase41 hh_purchase31 hh_purchase20 hh_purchase010 hh_purchased120 hh_purchased110 hh_purchased91 hh_purchased80 hh_purchased70 hh_purchased60 hh_purchased50 hh_purchased30 hh_purchased21 hh_purchased010 hh_consumed320 hh_consumed310 hh_consumed300 hh_consumed290 hh_consumed280 hh_consumed270 hh_consumed261 hh_consumed250 hh_consumed240 hh_consumed230 hh_consumed220 hh_consumed210 hh_consumed200 hh_consumed190 hh_consumed180 hh_consumed170 hh_consumed161 hh_consumed150 hh_consumed141 hh_consumed130 hh_consumed121 hh_consumed110 hh_consumed100 hh_consumed90 hh_consumed80 hh_consumed70 hh_consumed60 hh_consumed50 hh_consumed40 hh_consumed030 hh_consumed020 hh_consumed010 hh_openaccount0 hh_savings0 hh_account0 hhead_jobunpaid0 hhead_jobwage0 hhead_jobcasual1 hhead_jobbusiness0 hhead_jobagri1 hh_spent_schoolsup1 hh_spent_schoolfees0 hhead_primary0 hh_primary0 hhead_attended0 hh_attended0 hhead_readwrite0 hh_readwrite0 hhead_age2 hhead_sex1 hh_size3 region3  
+{txt}
+{com}.                 
+.                 *******Create a list of names with labels and values; export it to another DB*******
+.                 preserve
+{txt}
+{com}.                 drop if name==""
+{txt}(4,715 observations deleted)
+
+{com}.                 sort name value
+{txt}
+{com}.                 keep name orig_name label value
+{txt}
+{com}.                 save "$clean/PPI_labels.dta",  replace //Save the variable names with it's labels
+{txt}{p 0 4 2}
+file {bf}
+/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/02 Clean/LSMS/Full datasets/PPI_labels.dta{rm}
+saved
+{p_end}
+
+{com}.                 restore
+{txt}
+{com}.                 drop name label value orig_name
+{txt}
+{com}.                 
+.                 *******Order DB*******
+.                 order $advars
+{txt}
+{com}.                 drop $tobe_dropped //Drop questions that will not be used by the algorithm: usually MPI, WB, HDDS, WI, among others.
+{txt}
+{com}.                 
+.                 ********Drop all variables with low prevalence*******
+.                 *foreach v of var item* asset* food* {c -(} //For all items, food or assets
+.                 *       quietly: su `v' //Summarize 
+.                 *       if (r(mean)<0.1)  {c -(} //Drop if less than 10% of hh have them
+.                 *               drop `v' //Drop
+.                 *               display "Dropped `v'"   //Display dropped
+.                 *       {c )-}               
+.                 *{c )-}
+.                 
+.                 *******Drop all missing values*******
+.                 *mdesc         //Check for missing values in each variable
+.                 foreach v of var * {c -(} 
+{txt}  2{com}.                         drop if missing(`v') //Drop all observations that have any missing values 
+{txt}  3{com}.                 {c )-}
+{txt}(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+
+{com}.                 
+.                 
+. **C. Save
+.         * Save
+.         saveold "$clean/$ppidb", replace version(12)
+{txt}{p 0 1 2}
+(saving in Stata 12 format, which can be read
+by Stata 11 or 12)
+{p_end}
+{p 0 4 2}
+file {bf}
+/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/02 Clean/LSMS/Full datasets/PPI_2016_Ethiopia_full.dta{rm}
+saved
+{p_end}
+
+{com}. 
+.         * Close log
+.         log c
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/03 Data Wrangling/Do files/log_files/04_Ethiopia_ESS3_ppidb_20221010.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}10 Oct 2022, 21:12:05
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}

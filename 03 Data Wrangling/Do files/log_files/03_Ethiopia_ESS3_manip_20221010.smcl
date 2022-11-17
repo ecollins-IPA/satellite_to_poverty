@@ -1,0 +1,3455 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/03 Data Wrangling/Do files/log_files/03_Ethiopia_ESS3_manip_20221010.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}10 Oct 2022, 22:42:20
+{txt}
+{com}. di `cdate'
+{res}20221010
+{txt}
+{com}. 
+. ******************************************
+. ******************************************
+. ************PPI - Indicators**************
+. ******************************************
+. ******************************************
+. u "$clean/ESS3_2016.dta", clear 
+{txt}
+{com}. 
+. ******************************************
+. *** Manipulate indicators based on NPL ***
+. ******************************************
+. 
+. * Drop variables that are problematic
+. drop hh_rel hhead_religion hhead_marital hh_jobagri hh_jobbusiness hh_jobcasual hh_jobwage hh_jobunpaid hh_ATMDebit hh_ebanking hh_mobbanking hh_agentbanking hh_enoughfood-hh_fs8
+{txt}
+{com}. 
+. * Region
+. fre region
+{res}
+{txt}region {hline 2} Region Code
+{txt}{hline 26}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                   {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 26}{hline 1}{c +}{hline 44}
+{txt}Valid   1  Tigray          {c |}{res}        569      11.54      11.62      11.62
+{txt}        2  Afar            {c |}{res}        142       2.88       2.90      14.52
+{txt}        3  Amhara          {c |}{res}        995      20.19      20.32      34.84
+{txt}        4  Oromia          {c |}{res}        971      19.70      19.83      54.67
+{txt}        5  Somalie         {c |}{res}        258       5.23       5.27      59.93
+{txt}        6  Benshagul Gumuz {c |}{res}        124       2.52       2.53      62.47
+{txt}        7  snnp            {c |}{res}       1113      22.58      22.73      85.20
+{txt}        12 Gambelia        {c |}{res}        114       2.31       2.33      87.52
+{txt}        13 Harari          {c |}{res}        161       3.27       3.29      90.81
+{txt}        14 Addis Ababa     {c |}{res}        247       5.01       5.04      95.85
+{txt}        15 Diredwa         {c |}{res}        203       4.12       4.15     100.00
+{txt}        Total              {c |}{res}       4897      99.35     100.00           
+{txt}Missing .                  {c |}{res}         32       0.65                      
+{txt}Total                      {c |}{res}       4929     100.00                      
+{txt}{hline 26}{hline 1}{c BT}{hline 44}
+
+{com}. gen region_c=region
+{txt}(32 missing values generated)
+
+{com}. replace region=1 if region_c==3
+{txt}(995 real changes made)
+
+{com}. replace region=2 if region_c==4
+{txt}(971 real changes made)
+
+{com}. replace region=3 if region_c==7
+{txt}(1,113 real changes made)
+
+{com}. replace region=4 if region_c==1
+{txt}(569 real changes made)
+
+{com}. replace region=5 if inlist(region_c, 2, 5, 6, 12, 13, 14, 15)
+{txt}(991 real changes made)
+
+{com}. label define reg        1 "Amhara"      ///
+>                                         2 "Oromia"      ///
+>                                         3 "SNNP"        ///
+>                                         4 "Tigray"      ///
+>                                         5 "Other regions"
+{txt}
+{com}. label values region reg 
+{txt}
+{com}. tab region, sum(poor_npl1)
+
+            {txt}{c |}      Summary of Real per adult
+            {c |}  consumption is below the national
+            {c |}            poverty line
+Region Code {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+     Amhara {c |}  {res} .24020101   .42742027         995
+  {txt}   Oromia {c |}  {res} .16168898   .36835498         971
+  {txt}     SNNP {c |}  {res} .27044025   .44438694       1,113
+  {txt}   Tigray {c |}  {res} .14938489    .3567811         569
+  {txt}Other reg {c |}  {res} .17534027    .3804102       1,249
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20441086   .40331164       4,897
+{txt}
+{com}. drop region_c
+{txt}
+{com}. 
+.         * Household size
+.         tab hh_size, sum(poor_npl1)
+
+            {txt}{c |}      Summary of Real per adult
+            {c |}  consumption is below the national
+  Household {c |}            poverty line
+       Size {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          1 {c |}  {res} .07990868   .27146183         438
+  {txt}        2 {c |}  {res}  .1029703   .30422144         505
+  {txt}        3 {c |}  {res}  .1251932    .3311939         647
+  {txt}        4 {c |}  {res} .18122555   .38545631         767
+  {txt}        5 {c |}  {res} .21220527   .40915325         721
+  {txt}        6 {c |}  {res} .26822157   .44335685         686
+  {txt}        7 {c |}  {res} .27446809   .44672133         470
+  {txt}        8 {c |}  {res} .32317073   .46840187         328
+  {txt}        9 {c |}  {res} .35087719   .47864618         171
+  {txt}       10 {c |}  {res} .35483871   .48105774          93
+  {txt}       11 {c |}  {res} .48648649   .50671171          37
+  {txt}       12 {c |}  {res}        .2   .41039134          20
+  {txt}       13 {c |}  {res}        .5   .70710678           2
+  {txt}       14 {c |}  {res}         1           0           3
+  {txt}       15 {c |}  {res}         0           0           1
+  {txt}       16 {c |}  {res}         0           0           1
+  {txt}       17 {c |}  {res}         1           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20425271   .40319571       4,891
+{txt}
+{com}.         gen hh_size_c=hh_size
+{txt}(38 missing values generated)
+
+{com}.         replace hh_size=1 if hh_size_c<=3
+{txt}(1,152 real changes made)
+
+{com}.         replace hh_size=2 if hh_size_c>=4 & hh_size<=5
+{txt}(1,488 real changes made)
+
+{com}.         replace hh_size=3 if hh_size_c>=6
+{txt}(1,851 real changes made)
+
+{com}.         label define siz        1 "3 or less"   ///
+>                                                 2 "4 or 5"              ///
+>                                                 3 "6 or more"
+{txt}
+{com}.         label values hh_size siz
+{txt}
+{com}.         drop hh_size_c
+{txt}
+{com}.         tab hh_size, sum(poor_npl1)
+
+            {txt}{c |}      Summary of Real per adult
+            {c |}  consumption is below the national
+  Household {c |}            poverty line
+       Size {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  3 or less {c |}  {res} .10566038   .30749916       1,590
+  {txt}   4 or 5 {c |}  {res} .19623656   .39728308       1,488
+  {txt}6 or more {c |}  {res} .29659643   .45688047       1,851
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         
+. * Sex of the HH Head
+. tab hhead_sex, sum(poor_npl1)
+
+            {txt}{c |}      Summary of Real per adult
+What is the {c |}  consumption is below the national
+     sex of {c |}            poverty line
+    [Name]? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+       Male {c |}  {res} .21919813   .41376371       3,417
+  {txt}   Female {c |}  {res} .17195767    .3774685       1,512
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+.         * Age of the HH Head
+.         tab hhead_age, sum(poor_npl1)
+
+            {txt}{c |}      Summary of Real per adult
+ How old is {c |}  consumption is below the national
+    [Name]? {c |}            poverty line
+    (Years) {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          1 {c |}  {res}         0           0           1
+  {txt}       18 {c |}  {res}         0           0           7
+  {txt}       19 {c |}  {res}         0           0           9
+  {txt}       20 {c |}  {res}         0           0          13
+  {txt}       21 {c |}  {res} .10526316   .31530177          19
+  {txt}       22 {c |}  {res}      .125   .33601075          32
+  {txt}       23 {c |}  {res}    .09375   .29614458          32
+  {txt}       24 {c |}  {res}       .06   .23989794          50
+  {txt}       25 {c |}  {res}  .1147541   .32137002          61
+  {txt}       26 {c |}  {res} .11940299    .3267094          67
+  {txt}       27 {c |}  {res} .12765957   .33549971          94
+  {txt}       28 {c |}  {res} .10416667   .30708019          96
+  {txt}       29 {c |}  {res} .15044248   .35909706         113
+  {txt}       30 {c |}  {res} .12903226   .33614046         186
+  {txt}       31 {c |}  {res} .19277108   .39687288          83
+  {txt}       32 {c |}  {res} .22727273   .42026584         176
+  {txt}       33 {c |}  {res} .20792079   .40784388         101
+  {txt}       34 {c |}  {res} .13888889   .34744282         108
+  {txt}       35 {c |}  {res}        .2   .40148976         135
+  {txt}       36 {c |}  {res} .22131148   .41684163         122
+  {txt}       37 {c |}  {res} .21518987    .4122607         158
+  {txt}       38 {c |}  {res} .25531915   .43759497         141
+  {txt}       39 {c |}  {res} .28099174   .45135242         121
+  {txt}       40 {c |}  {res} .22155689    .4165434         167
+  {txt}       41 {c |}  {res} .27173913   .44729371          92
+  {txt}       42 {c |}  {res} .18238994   .38738569         159
+  {txt}       43 {c |}  {res} .21176471   .41098365          85
+  {txt}       44 {c |}  {res} .31818182   .46843968          88
+  {txt}       45 {c |}  {res} .26119403   .44093381         134
+  {txt}       46 {c |}  {res} .25714286   .43915503         105
+  {txt}       47 {c |}  {res} .20754717   .40747728         106
+  {txt}       48 {c |}  {res} .21100917   .40990953         109
+  {txt}       49 {c |}  {res}  .3258427   .47134433          89
+  {txt}       50 {c |}  {res} .29464286   .45793097         112
+  {txt}       51 {c |}  {res} .27027027    .4471308          74
+  {txt}       52 {c |}  {res} .15748031   .36569562         127
+  {txt}       53 {c |}  {res} .22222222   .41964345          54
+  {txt}       54 {c |}  {res}      .275   .44933143          80
+  {txt}       55 {c |}  {res} .21176471   .41098365          85
+  {txt}       56 {c |}  {res}  .2278481   .42212427          79
+  {txt}       57 {c |}  {res} .26315789   .44327331          76
+  {txt}       58 {c |}  {res} .14492754   .35460675          69
+  {txt}       59 {c |}  {res}  .2037037   .40653295          54
+  {txt}       60 {c |}  {res} .26213592   .44194679         103
+  {txt}       61 {c |}  {res} .20588235   .41042563          34
+  {txt}       62 {c |}  {res} .18666667    .3922676          75
+  {txt}       63 {c |}  {res} .22222222   .42043748          45
+  {txt}       64 {c |}  {res} .12698413   .33562957          63
+  {txt}       65 {c |}  {res}  .2027027   .40475698          74
+  {txt}       66 {c |}  {res} .16071429   .37059096          56
+  {txt}       67 {c |}  {res} .15384615   .36432131          52
+  {txt}       68 {c |}  {res} .26530612   .44607129          49
+  {txt}       69 {c |}  {res} .26190476   .44500062          42
+  {txt}       70 {c |}  {res} .18181818   .38822378          77
+  {txt}       71 {c |}  {res} .20833333   .41485112          24
+  {txt}       72 {c |}  {res} .17391304   .38322305          46
+  {txt}       73 {c |}  {res} .12820513   .33868843          39
+  {txt}       74 {c |}  {res}       .25   .43852901          40
+  {txt}       75 {c |}  {res} .13888889   .35073619          36
+  {txt}       76 {c |}  {res} .24242424   .43519414          33
+  {txt}       77 {c |}  {res}     .1875   .40311289          16
+  {txt}       78 {c |}  {res} .29166667   .46430562          24
+  {txt}       79 {c |}  {res}      .125   .34156503          16
+  {txt}       80 {c |}  {res} .14285714   .35634832          28
+  {txt}       81 {c |}  {res} .16666667   .38924947          12
+  {txt}       82 {c |}  {res}        .2   .42163702          10
+  {txt}       83 {c |}  {res} .09090909   .30151134          11
+  {txt}       84 {c |}  {res}        .1   .31622777          10
+  {txt}       85 {c |}  {res} .33333333   .51639778           6
+  {txt}       86 {c |}  {res} .33333333   .57735027           3
+  {txt}       87 {c |}  {res} .33333333   .51639778           6
+  {txt}       88 {c |}  {res} .33333333   .51639778           6
+  {txt}       89 {c |}  {res}       .25          .5           4
+  {txt}       90 {c |}  {res}         0           0           7
+  {txt}       91 {c |}  {res}         1           0           1
+  {txt}       92 {c |}  {res}        .5   .70710678           2
+  {txt}       93 {c |}  {res}        .5   .70710678           2
+  {txt}       95 {c |}  {res}        .5   .70710678           2
+  {txt}       97 {c |}  {res}         0           0           3
+  {txt}       98 {c |}  {res}         1           0           1
+  {txt}       99 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20474838   .40355858       4,928
+{txt}
+{com}.         gen hhead_age_c=hhead_age
+{txt}(1 missing value generated)
+
+{com}.         replace hhead_age=1 if hhead_age_c<=35
+{txt}(1,382 real changes made)
+
+{com}.         replace hhead_age=2 if hhead_age_c>=36 & hhead_age_c<=54
+{txt}(2,123 real changes made)
+
+{com}.         replace hhead_age=3 if hhead_age_c>=55
+{txt}(1,423 real changes made)
+
+{com}.         label define ages       1 "35 or below" ///
+>                                                 2 "36-54"               ///
+>                                                 3 "55 or more"
+{txt}
+{com}.         label values hhead_age ages
+{txt}
+{com}.         drop hhead_age_c
+{txt}
+{com}.         tab hhead_age, sum(poor_npl1)
+
+            {txt}{c |}      Summary of Real per adult
+ How old is {c |}  consumption is below the national
+    [Name]? {c |}            poverty line
+    (Years) {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  35 or bel {c |}  {res} .15112075    .3582961       1,383
+  {txt}    36-54 {c |}  {res} .24069713   .42760747       2,123
+  {txt}55 or mor {c |}  {res} .20309206   .40244191       1,423
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         
+. * How many members of the HH can read and write?
+. tab hh_readwrite, sum(poor_npl1)
+
+   {txt}How many {c |}
+ members of {c |}
+ the HH can {c |}
+   read and {c |}      Summary of Real per adult
+   write in {c |}  consumption is below the national
+        any {c |}            poverty line
+  language? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .27187865    .4451875         857
+  {txt}        1 {c |}  {res} .17692308   .38178719       1,040
+  {txt}        2 {c |}  {res} .16894977   .37487876       1,095
+  {txt}        3 {c |}  {res} .19893899   .39946703         754
+  {txt}        4 {c |}  {res}  .2195122     .414305         533
+  {txt}        5 {c |}  {res} .21835443   .41378449         316
+  {txt}        6 {c |}  {res} .23033708   .42223631         178
+  {txt}        7 {c |}  {res} .17346939   .38059937          98
+  {txt}        8 {c |}  {res}  .2195122   .41905818          41
+  {txt}        9 {c |}  {res} .23076923   .43852901          13
+  {txt}       10 {c |}  {res}         0           0           1
+  {txt}       11 {c |}  {res}         0           0           2
+  {txt}       12 {c |}  {res}         1           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. replace hh_readwrite=2 if hh_readwrite>=2
+{txt}(1,937 real changes made)
+
+{com}. label define rwri       0 "None"                ///
+>                                         1 "Only one"    ///
+>                                         2 "Two or more"
+{txt}
+{com}. label values hh_readwrite rwri
+{txt}
+{com}. tab hh_readwrite, sum(poor_npl1)
+
+   {txt}How many {c |}
+ members of {c |}
+ the HH can {c |}
+   read and {c |}      Summary of Real per adult
+   write in {c |}  consumption is below the national
+        any {c |}            poverty line
+  language? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+       None {c |}  {res} .27187865    .4451875         857
+  {txt} Only one {c |}  {res} .17692308   .38178719       1,040
+  {txt}Two or mo {c |}  {res} .19525066   .39645893       3,032
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+.         * Can the HH Head read and write
+.         tab hhead_readwrite, sum(poor_npl1)
+
+    {txt}Can the {c |}
+ HHead read {c |}      Summary of Real per adult
+  and write {c |}  consumption is below the national
+     in any {c |}            poverty line
+  language? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .27197347   .44506856       2,412
+  {txt}      Yes {c |}  {res} .14024632   .34731141       2,517
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+. * How many members of the HH have ever attended school?
+. tab hh_attended, sum(poor_npl1) mis
+
+   {txt}How many {c |}
+ members of {c |}
+the HH have {c |}      Summary of Real per adult
+       ever {c |}  consumption is below the national
+   attended {c |}            poverty line
+    school? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .25075529   .43377564         662
+  {txt}        1 {c |}  {res} .18367347    .3874258         931
+  {txt}        2 {c |}  {res} .16306306   .36958972       1,110
+  {txt}        3 {c |}  {res} .19534884   .39669971         860
+  {txt}        4 {c |}  {res} .23015873   .42126878         630
+  {txt}        5 {c |}  {res} .24099723   .42828223         361
+  {txt}        6 {c |}  {res} .21182266   .40960997         203
+  {txt}        7 {c |}  {res}       .27   .44619604         100
+  {txt}        8 {c |}  {res}       .22   .41845196          50
+  {txt}        9 {c |}  {res} .41666667   .51492865          12
+  {txt}       10 {c |}  {res} .42857143   .53452248           7
+  {txt}       11 {c |}  {res}         0           0           1
+  {txt}       12 {c |}  {res}         1           0           2
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. replace hh_attended=0 if hh_attended==1
+{txt}(931 real changes made)
+
+{com}. replace hh_attended=1 if hh_attended>=2
+{txt}(3,336 real changes made)
+
+{com}. label define atte       0 "0-1" 1 "2 or more"
+{txt}
+{com}. label values hh_attended atte
+{txt}
+{com}. tab hh_attended, sum(poor_npl1)
+
+   {txt}How many {c |}
+ members of {c |}
+the HH have {c |}      Summary of Real per adult
+       ever {c |}  consumption is below the national
+   attended {c |}            poverty line
+    school? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+        0-1 {c |}  {res} .21155053   .40853602       1,593
+  {txt}2 or more {c |}  {res} .20143885   .40113523       3,336
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+.         * Has the HH Head ever attended school?
+.         tab hhead_attended, sum(poor_npl1) mis
+
+    {txt}Has the {c |}      Summary of Real per adult
+ HHead ever {c |}  consumption is below the national
+   attended {c |}            poverty line
+    school? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .26902588   .44353784       2,628
+  {txt}      Yes {c |}  {res} .13124728     .337744       2,301
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+. * How many members of the HH completed primary education?
+. tab hh_primary, sum(poor_npl1) mis
+
+   {txt}How many {c |}
+ members of {c |}
+     the HH {c |}      Summary of Real per adult
+  completed {c |}  consumption is below the national
+    primary {c |}            poverty line
+ education? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .26465426   .44122638       2,849
+  {txt}        1 {c |}  {res} .14845938   .35572088       1,071
+  {txt}        2 {c |}  {res} .08598726   .28056871         628
+  {txt}        3 {c |}  {res} .13274336   .34005032         226
+  {txt}        4 {c |}  {res} .06593407    .2495417          91
+  {txt}        5 {c |}  {res} .14285714    .3541688          42
+  {txt}        6 {c |}  {res}         0           0          17
+  {txt}        7 {c |}  {res}         0           0           3
+  {txt}        8 {c |}  {res}         0           0           1
+  {txt}        9 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. replace hh_primary=1 if hh_primary>=1
+{txt}(1,009 real changes made)
+
+{com}. label define prim       0 "None" 1 "One or more"
+{txt}
+{com}. label values hh_primary prim
+{txt}
+{com}. tab hh_primary, sum(poor_npl1)
+
+   {txt}How many {c |}
+ members of {c |}
+     the HH {c |}      Summary of Real per adult
+  completed {c |}  consumption is below the national
+    primary {c |}            poverty line
+ education? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+       None {c |}  {res} .26465426   .44122638       2,849
+  {txt}One or mo {c |}  {res} .12259615   .32805194       2,080
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+.         * Did the HH Head completed primary education?
+.         tab hhead_primary, sum(poor_npl1) mis
+
+    {txt}Did the {c |}
+      HHead {c |}      Summary of Real per adult
+  completed {c |}  consumption is below the national
+    primary {c |}            poverty line
+ education? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .24563688   .43052025       3,839
+  {txt}      Yes {c |}  {res} .06055046   .23861336       1,090
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         
+. * Did the HH spend on school fees in the last 12 months?
+. replace hh_spent_schoolfees=1 if hh_spent_schoolfees!=0
+{txt}(1,763 real changes made)
+
+{com}. label values hh_spent_schoolfees yesno
+{txt}
+{com}. tab hh_spent_schoolfees, sum(poor_npl1) mis
+
+   {txt}How much {c |}
+ did the HH {c |}
+   spend on {c |}      Summary of Real per adult
+school fees {c |}  consumption is below the national
+the past 12 {c |}            poverty line
+    months? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .20524984   .40394795       3,162
+  {txt}      Yes {c |}  {res} .20373514   .40288832       1,767
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+.         * Did the HH spend on school supplies in the last 12 months?
+.         replace hh_spent_schoolsup=1 if hh_spent_schoolsup!=0
+{txt}(3,165 real changes made)
+
+{com}.         label values hh_spent_schoolsup yesno
+{txt}
+{com}.         tab hh_spent_schoolsup, sum(poor_npl1) mis
+
+   {txt}How much {c |}
+ did the HH {c |}
+   spend on {c |}
+     school {c |}      Summary of Real per adult
+   supplies {c |}  consumption is below the national
+the past 12 {c |}            poverty line
+    months? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .17650397    .3813566       1,762
+  {txt}      Yes {c |}  {res} .22039785    .4145804       3,167
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         
+. * Did the HH Head spend at least one hour working on agriculture?
+. tab hhead_jobagri, sum(poor_npl1) mis
+
+    {txt}Did the {c |}
+HHead spend {c |}
+   at least {c |}
+one hour in {c |}
+ the last 7 {c |}      Summary of Real per adult
+ days on HH {c |}  consumption is below the national
+agricultura {c |}            poverty line
+     l acti {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .16550765   .37170271       2,876
+  {txt}        1 {c |}  {res}    .40625   .49899092          32
+  {txt}        2 {c |}  {res}  .2238806   .41998902          67
+  {txt}        3 {c |}  {res} .28070175   .45333628          57
+  {txt}        4 {c |}  {res} .19402985   .39843656          67
+  {txt}        5 {c |}  {res} .29411765   .46017899          51
+  {txt}        6 {c |}  {res} .31944444   .46953345          72
+  {txt}        7 {c |}  {res} .19354839   .39830418          62
+  {txt}        8 {c |}  {res} .31481481   .46880314          54
+  {txt}        9 {c |}  {res} .55555556   .52704628           9
+  {txt}       10 {c |}  {res} .26595745   .44421084          94
+  {txt}       11 {c |}  {res}         0           0           4
+  {txt}       12 {c |}  {res}  .2962963   .45946829          81
+  {txt}       13 {c |}  {res} .45454545   .52223297          11
+  {txt}       14 {c |}  {res}  .2295082   .42225066         122
+  {txt}       15 {c |}  {res} .44680851    .5025375          47
+  {txt}       16 {c |}  {res} .36585366   .48765242          41
+  {txt}       17 {c |}  {res}        .5   .52704628          10
+  {txt}       18 {c |}  {res} .33898305   .47742735          59
+  {txt}       19 {c |}  {res} .44444444   .52704628           9
+  {txt}       20 {c |}  {res} .37974684   .48842493          79
+  {txt}       21 {c |}  {res} .19444444   .39761752         108
+  {txt}       22 {c |}  {res}       .25   .46291005           8
+  {txt}       23 {c |}  {res}        .4   .54772256           5
+  {txt}       24 {c |}  {res} .28571429    .4547163          77
+  {txt}       25 {c |}  {res} .25925926   .44657608          27
+  {txt}       26 {c |}  {res}        .3   .48304589          10
+  {txt}       27 {c |}  {res}        .2    .4472136           5
+  {txt}       28 {c |}  {res} .19047619    .3942443         126
+  {txt}       29 {c |}  {res}       .25   .46291005           8
+  {txt}       30 {c |}  {res} .28070175   .45333628          57
+  {txt}       31 {c |}  {res} .33333333   .51639778           6
+  {txt}       32 {c |}  {res} .41666667   .50361016          24
+  {txt}       33 {c |}  {res}         1           0           1
+  {txt}       34 {c |}  {res} .33333333   .49236596          12
+  {txt}       35 {c |}  {res} .17204301   .37946346          93
+  {txt}       36 {c |}  {res} .39393939   .49619766          33
+  {txt}       37 {c |}  {res}         0           0           2
+  {txt}       38 {c |}  {res} .15384615   .37553381          13
+  {txt}       39 {c |}  {res}         0           0           1
+  {txt}       40 {c |}  {res} .27027027   .45022517          37
+  {txt}       41 {c |}  {res}         0           0           3
+  {txt}       42 {c |}  {res} .21428571   .41243556          98
+  {txt}       43 {c |}  {res}         0           0           5
+  {txt}       44 {c |}  {res} .33333333   .51639778           6
+  {txt}       45 {c |}  {res}         0           0          17
+  {txt}       46 {c |}  {res}        .5   .57735027           4
+  {txt}       47 {c |}  {res}         0           0           2
+  {txt}       48 {c |}  {res} .28947368   .45960587          38
+  {txt}       49 {c |}  {res} .21428571   .41403934          56
+  {txt}       50 {c |}  {res} .15384615   .37553381          13
+  {txt}       51 {c |}  {res}        .5   .70710678           2
+  {txt}       52 {c |}  {res}       .25   .46291005           8
+  {txt}       54 {c |}  {res}      .125   .35355339           8
+  {txt}       55 {c |}  {res}         0           0           3
+  {txt}       56 {c |}  {res} .13207547   .34181281          53
+  {txt}       58 {c |}  {res}         0           0           3
+  {txt}       60 {c |}  {res} .22222222   .44095855           9
+  {txt}       61 {c |}  {res}         0           0           1
+  {txt}       62 {c |}  {res}         0           0           3
+  {txt}       63 {c |}  {res}        .5   .70710678           2
+  {txt}       64 {c |}  {res}         0           0           6
+  {txt}       65 {c |}  {res}         0           0           1
+  {txt}       66 {c |}  {res}         0           0           1
+  {txt}       70 {c |}  {res} .13333333   .35186578          15
+  {txt}       72 {c |}  {res}        .5   .54772256           6
+  {txt}       77 {c |}  {res}         0           0           1
+  {txt}       84 {c |}  {res}         0           0           7
+  {txt}       96 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. replace hhead_jobagri=1 if hhead_jobagri!=0
+{txt}(2,021 real changes made)
+
+{com}. label values hhead_jobagri yesno
+{txt}
+{com}. tab hhead_jobagri, sum(poor_npl1) mis
+
+    {txt}Did the {c |}
+HHead spend {c |}
+   at least {c |}
+one hour in {c |}
+ the last 7 {c |}      Summary of Real per adult
+ days on HH {c |}  consumption is below the national
+agricultura {c |}            poverty line
+     l acti {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .16550765   .37170271       2,876
+  {txt}      Yes {c |}  {res} .25962007   .43853297       2,053
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+.         * Did the HH Head spend at least one hour working on non-agri business?
+.         tab hhead_jobbusiness, sum(poor_npl1) mis
+
+    {txt}Did the {c |}
+HHead spend {c |}
+   at least {c |}
+one hour in {c |}
+ the last 7 {c |}
+       days {c |}      Summary of Real per adult
+running/hel {c |}  consumption is below the national
+  ping with {c |}            poverty line
+         no {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .21699006   .41224457       4,226
+  {txt}        1 {c |}  {res}         0           0           4
+  {txt}        2 {c |}  {res} .57142857   .53452248           7
+  {txt}        3 {c |}  {res}         0           0           5
+  {txt}        4 {c |}  {res}       .25   .45226702          12
+  {txt}        5 {c |}  {res}       .25   .46291005           8
+  {txt}        6 {c |}  {res} .23809524   .43643578          21
+  {txt}        7 {c |}  {res}         0           0           9
+  {txt}        8 {c |}  {res} .42105263   .50725727          19
+  {txt}        9 {c |}  {res} .14285714   .37796447           7
+  {txt}       10 {c |}  {res} .20689655   .41225082          29
+  {txt}       11 {c |}  {res} .33333333   .51639778           6
+  {txt}       12 {c |}  {res} .13157895   .34256999          38
+  {txt}       13 {c |}  {res}         0           0           5
+  {txt}       14 {c |}  {res}         0           0          11
+  {txt}       15 {c |}  {res} .21428571   .42581531          14
+  {txt}       16 {c |}  {res}     .4375   .51234754          16
+  {txt}       17 {c |}  {res}         0           0           2
+  {txt}       18 {c |}  {res} .30769231   .48038446          13
+  {txt}       20 {c |}  {res} .14285714   .36313652          14
+  {txt}       21 {c |}  {res}         0           0          14
+  {txt}       22 {c |}  {res} .14285714   .37796447           7
+  {txt}       23 {c |}  {res}        .5   .70710678           2
+  {txt}       24 {c |}  {res} .09090909   .29424494          22
+  {txt}       25 {c |}  {res} .33333333   .57735027           3
+  {txt}       26 {c |}  {res}         0           0           5
+  {txt}       27 {c |}  {res} .33333333   .57735027           3
+  {txt}       28 {c |}  {res} .13043478   .34435022          23
+  {txt}       30 {c |}  {res} .11111111   .32025631          27
+  {txt}       32 {c |}  {res}         0           0          10
+  {txt}       33 {c |}  {res}         0           0           3
+  {txt}       34 {c |}  {res}         0           0           1
+  {txt}       35 {c |}  {res} .08695652   .28810407          23
+  {txt}       36 {c |}  {res}       .15   .36634755          20
+  {txt}       37 {c |}  {res}         0           0           1
+  {txt}       38 {c |}  {res}         0           0           1
+  {txt}       39 {c |}  {res}         0           0           2
+  {txt}       40 {c |}  {res} .17391304   .38755339          23
+  {txt}       42 {c |}  {res} .11428571   .32280285          35
+  {txt}       43 {c |}  {res}         0           0           2
+  {txt}       44 {c |}  {res}         0           0           1
+  {txt}       45 {c |}  {res}         0           0           4
+  {txt}       46 {c |}  {res}         0           0           3
+  {txt}       48 {c |}  {res} .10714286   .31497039          28
+  {txt}       49 {c |}  {res} .08333333   .28867513          12
+  {txt}       50 {c |}  {res} .33333333   .51639778           6
+  {txt}       52 {c |}  {res} .11111111   .33333333           9
+  {txt}       54 {c |}  {res}         0           0           3
+  {txt}       56 {c |}  {res} .03846154   .19418391          52
+  {txt}       58 {c |}  {res}         0           0           1
+  {txt}       60 {c |}  {res}         0           0          24
+  {txt}       63 {c |}  {res} .28571429   .48795004           7
+  {txt}       64 {c |}  {res}       .25          .5           4
+  {txt}       65 {c |}  {res}         0           0           1
+  {txt}       66 {c |}  {res}         0           0           3
+  {txt}       68 {c |}  {res}         0           0           2
+  {txt}       70 {c |}  {res} .03225806    .1796053          31
+  {txt}       72 {c |}  {res} .07692308    .2773501          13
+  {txt}       75 {c |}  {res}         0           0           1
+  {txt}       77 {c |}  {res}         0           0           5
+  {txt}       78 {c |}  {res}         0           0           1
+  {txt}       84 {c |}  {res}         0           0          16
+  {txt}       87 {c |}  {res}         1           0           1
+  {txt}       94 {c |}  {res}         0           0           2
+  {txt}       96 {c |}  {res}         0           0           1
+  {txt}       98 {c |}  {res}         0           0           5
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hhead_jobbusiness=1 if hhead_jobbusiness!=0
+{txt}(699 real changes made)
+
+{com}.         label values hhead_jobbusiness yesno
+{txt}
+{com}.         tab hhead_jobbusiness, sum(poor_npl1) mis
+
+    {txt}Did the {c |}
+HHead spend {c |}
+   at least {c |}
+one hour in {c |}
+ the last 7 {c |}
+       days {c |}      Summary of Real per adult
+running/hel {c |}  consumption is below the national
+  ping with {c |}            poverty line
+         no {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .21699006   .41224457       4,226
+  {txt}      Yes {c |}  {res} .13086771   .33749574         703
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         
+. * Did the HH Head spend at least one hour working on casual labor?
+. tab hhead_jobcasual, sum(poor_npl1) mis
+
+    {txt}Did the {c |}
+HHead spend {c |}
+   at least {c |}
+one hour in {c |}
+ the last 7 {c |}
+       days {c |}      Summary of Real per adult
+ engaged in {c |}  consumption is below the national
+casual/part {c |}            poverty line
+          - {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .20355132   .40268262       4,618
+  {txt}        1 {c |}  {res}       .25   .46291005           8
+  {txt}        2 {c |}  {res} .07142857   .26726124          14
+  {txt}        3 {c |}  {res} .36363636   .50452498          11
+  {txt}        4 {c |}  {res}        .5   .52223297          12
+  {txt}        5 {c |}  {res}        .5   .52704628          10
+  {txt}        6 {c |}  {res}        .2   .41403934          15
+  {txt}        7 {c |}  {res} .14285714   .37796447           7
+  {txt}        8 {c |}  {res}        .3   .48304589          10
+  {txt}        9 {c |}  {res}         0           0           1
+  {txt}       10 {c |}  {res} .31578947   .47756693          19
+  {txt}       11 {c |}  {res}         1           0           1
+  {txt}       12 {c |}  {res}       .25   .45226702          12
+  {txt}       13 {c |}  {res}         0           0           2
+  {txt}       14 {c |}  {res} .08333333   .28867513          12
+  {txt}       15 {c |}  {res}         0           0           7
+  {txt}       16 {c |}  {res}         0           0           8
+  {txt}       17 {c |}  {res}         1           0           2
+  {txt}       18 {c |}  {res} .15384615   .37553381          13
+  {txt}       19 {c |}  {res}         0           0           2
+  {txt}       20 {c |}  {res}        .5   .51639778          16
+  {txt}       21 {c |}  {res} .13333333   .35186578          15
+  {txt}       22 {c |}  {res}         0           0           3
+  {txt}       23 {c |}  {res}         1           0           1
+  {txt}       24 {c |}  {res} .18181818   .40451992          11
+  {txt}       25 {c |}  {res} .16666667   .40824829           6
+  {txt}       27 {c |}  {res}         0           0           1
+  {txt}       28 {c |}  {res}        .2   .41403934          15
+  {txt}       30 {c |}  {res} .14285714   .37796447           7
+  {txt}       32 {c |}  {res}        .5   .57735027           4
+  {txt}       35 {c |}  {res} .16666667   .40824829           6
+  {txt}       36 {c |}  {res} .33333333   .51639778           6
+  {txt}       40 {c |}  {res}       .25          .5           4
+  {txt}       42 {c |}  {res}        .2    .4472136           5
+  {txt}       45 {c |}  {res}         0           0           1
+  {txt}       48 {c |}  {res}        .1   .31622777          10
+  {txt}       49 {c |}  {res}         0           0           3
+  {txt}       50 {c |}  {res}         0           0           1
+  {txt}       51 {c |}  {res}         0           0           1
+  {txt}       53 {c |}  {res}         0           0           1
+  {txt}       54 {c |}  {res} .66666667   .57735027           3
+  {txt}       56 {c |}  {res}         0           0          11
+  {txt}       58 {c |}  {res}         0           0           1
+  {txt}       60 {c |}  {res}        .5   .70710678           2
+  {txt}       63 {c |}  {res}         0           0           2
+  {txt}       70 {c |}  {res}         0           0           1
+  {txt}       72 {c |}  {res}         0           0           1
+  {txt}       74 {c |}  {res}         0           0           1
+  {txt}       77 {c |}  {res}         0           0           1
+  {txt}       84 {c |}  {res}         0           0           3
+  {txt}       90 {c |}  {res}         0           0           1
+  {txt}       96 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. replace hhead_jobcasual=1 if hhead_jobcasual!=0
+{txt}(303 real changes made)
+
+{com}. label values hhead_jobcasual yesno
+{txt}
+{com}. tab hhead_jobcasual, sum(poor_npl1) mis
+
+    {txt}Did the {c |}
+HHead spend {c |}
+   at least {c |}
+one hour in {c |}
+ the last 7 {c |}
+       days {c |}      Summary of Real per adult
+ engaged in {c |}  consumption is below the national
+casual/part {c |}            poverty line
+          - {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .20355132   .40268262       4,618
+  {txt}      Yes {c |}  {res} .22186495    .4161704         311
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+.         * Did the HH Head spend at least one hour working on wage labor?
+.         tab hhead_jobwage, sum(poor_npl1) mis
+
+    {txt}Did the {c |}
+HHead spend {c |}
+   at least {c |}
+one hour in {c |}
+ the last 7 {c |}      Summary of Real per adult
+days on any {c |}  consumption is below the national
+   work for {c |}            poverty line
+    salary/ {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .21838555    .4131977       4,373
+  {txt}        1 {c |}  {res}         0           0           3
+  {txt}        2 {c |}  {res}         0           0          10
+  {txt}        3 {c |}  {res}         0           0           2
+  {txt}        4 {c |}  {res} .33333333   .57735027           3
+  {txt}        5 {c |}  {res}         0           0           1
+  {txt}        6 {c |}  {res}        .5   .70710678           2
+  {txt}        7 {c |}  {res}        .5   .70710678           2
+  {txt}        8 {c |}  {res} .11111111   .33333333           9
+  {txt}        9 {c |}  {res}         1           0           1
+  {txt}       10 {c |}  {res}         0           0           7
+  {txt}       12 {c |}  {res}        .4   .54772256           5
+  {txt}       14 {c |}  {res}         0           0           5
+  {txt}       15 {c |}  {res}       .25          .5           4
+  {txt}       16 {c |}  {res}         0           0           8
+  {txt}       18 {c |}  {res}        .5   .70710678           2
+  {txt}       20 {c |}  {res}     .1875   .40311289          16
+  {txt}       21 {c |}  {res}         0           0           5
+  {txt}       22 {c |}  {res} .33333333   .57735027           3
+  {txt}       24 {c |}  {res} .11111111   .33333333           9
+  {txt}       25 {c |}  {res}         0           0           1
+  {txt}       28 {c |}  {res}        .2   .42163702          10
+  {txt}       30 {c |}  {res} .07142857   .26726124          14
+  {txt}       31 {c |}  {res}         0           0           1
+  {txt}       32 {c |}  {res}         0           0           9
+  {txt}       33 {c |}  {res}         0           0           1
+  {txt}       35 {c |}  {res} .16666667   .38924947          12
+  {txt}       36 {c |}  {res} .33333333   .57735027           3
+  {txt}       37 {c |}  {res}         0           0           1
+  {txt}       39 {c |}  {res} .07692308   .27174649          26
+  {txt}       40 {c |}  {res} .02469136   .15614966          81
+  {txt}       42 {c |}  {res} .10526316   .31530177          19
+  {txt}       44 {c |}  {res} .14285714   .37796447           7
+  {txt}       45 {c |}  {res}         0           0           9
+  {txt}       46 {c |}  {res}         0           0           2
+  {txt}       47 {c |}  {res}         0           0           1
+  {txt}       48 {c |}  {res} .10714286   .31209389          56
+  {txt}       49 {c |}  {res} .14285714   .37796447           7
+  {txt}       50 {c |}  {res} .14285714   .37796447           7
+  {txt}       51 {c |}  {res}         0           0           1
+  {txt}       52 {c |}  {res}         0           0           4
+  {txt}       54 {c |}  {res}      .125   .35355339           8
+  {txt}       55 {c |}  {res}         0           0           2
+  {txt}       56 {c |}  {res} .06976744   .25624885          86
+  {txt}       57 {c |}  {res}         0           0           1
+  {txt}       60 {c |}  {res} .11111111   .32338083          18
+  {txt}       61 {c |}  {res}         0           0           1
+  {txt}       63 {c |}  {res}         0           0           3
+  {txt}       64 {c |}  {res}         0           0           3
+  {txt}       66 {c |}  {res} .33333333   .57735027           3
+  {txt}       68 {c |}  {res}         0           0           1
+  {txt}       69 {c |}  {res}         0           0           1
+  {txt}       70 {c |}  {res} .21052632   .41885391          19
+  {txt}       72 {c |}  {res} .07142857   .26726124          14
+  {txt}       77 {c |}  {res}         0           0           1
+  {txt}       78 {c |}  {res}         0           0           2
+  {txt}       79 {c |}  {res}         0           0           1
+  {txt}       80 {c |}  {res}         0           0           1
+  {txt}       84 {c |}  {res} .26666667   .45773771          15
+  {txt}       91 {c |}  {res}         0           0           1
+  {txt}       96 {c |}  {res}         0           0           4
+  {txt}       98 {c |}  {res}         0           0           2
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hhead_jobwage=1 if hhead_jobwage!=0
+{txt}(553 real changes made)
+
+{com}.         label values hhead_jobwage yesno
+{txt}
+{com}.         tab hhead_jobwage, sum(poor_npl1) mis
+
+    {txt}Did the {c |}
+HHead spend {c |}
+   at least {c |}
+one hour in {c |}
+ the last 7 {c |}      Summary of Real per adult
+days on any {c |}  consumption is below the national
+   work for {c |}            poverty line
+    salary/ {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .21838555    .4131977       4,373
+  {txt}      Yes {c |}  {res}  .0971223   .29639089         556
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         
+. * Did the HH Head spend at least one hour working on unpaid labor?
+. tab hhead_jobunpaid, sum(poor_npl1) mis
+
+    {txt}Did the {c |}
+HHead spend {c |}
+   at least {c |}
+one hour in {c |}
+ the last 7 {c |}
+    days on {c |}      Summary of Real per adult
+     unpaid {c |}  consumption is below the national
+apprentices {c |}            poverty line
+         hi {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .20542636   .40405405       4,902
+  {txt}        1 {c |}  {res}         0           0           3
+  {txt}        2 {c |}  {res}         0           0           4
+  {txt}        3 {c |}  {res}         0           0           1
+  {txt}        4 {c |}  {res}         0           0           3
+  {txt}        5 {c |}  {res}         0           0           1
+  {txt}        6 {c |}  {res}        .5   .70710678           2
+  {txt}        8 {c |}  {res}         0           0           3
+  {txt}        9 {c |}  {res}         0           0           1
+  {txt}       24 {c |}  {res}         0           0           1
+  {txt}       28 {c |}  {res}         0           0           1
+  {txt}       30 {c |}  {res}         0           0           1
+  {txt}       32 {c |}  {res}         0           0           1
+  {txt}       35 {c |}  {res}         0           0           1
+  {txt}       39 {c |}  {res}         0           0           1
+  {txt}       46 {c |}  {res}         0           0           1
+  {txt}       49 {c |}  {res}         1           0           1
+  {txt}       81 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. replace hhead_jobunpaid=1 if hhead_jobunpaid!=0
+{txt}(24 real changes made)
+
+{com}. label values hhead_jobunpaid yesno
+{txt}
+{com}. tab hhead_jobunpaid, sum(poor_npl1) mis
+
+    {txt}Did the {c |}
+HHead spend {c |}
+   at least {c |}
+one hour in {c |}
+ the last 7 {c |}
+    days on {c |}      Summary of Real per adult
+     unpaid {c |}  consumption is below the national
+apprentices {c |}            poverty line
+         hi {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .20542636   .40405405       4,902
+  {txt}      Yes {c |}  {res} .07407407   .26688026          27
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+.         * Does any member of the HH have an account?
+.         tab hh_account, sum(poor_npl1) mis
+
+   {txt}Does any {c |}
+  member of {c |}
+the HH have {c |}
+ an account {c |}      Summary of Real per adult
+     with a {c |}  consumption is below the national
+Bank/MFI/SA {c |}            poverty line
+   CCO/...? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .27284638    .4454955       3,053
+  {txt}      Yes {c |}  {res} .09381663   .29165118       1,876
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         
+. * On what basis does the HH occupy the dwelling?
+. replace hh_status=2 if hh_status!=1
+{txt}(843 real changes made)
+
+{com}. label define dwe 1 "Privately owned" 2 "Free of rent, Rented, Other"
+{txt}
+{com}. label values hh_status dwe
+{txt}
+{com}. tab hh_status, sum(poor_npl1) mis
+
+    {txt}On what {c |}
+ basis does {c |}
+        the {c |}      Summary of Real per adult
+  household {c |}  consumption is below the national
+ occupy the {c |}            poverty line
+  dwelling? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  Privately {c |}  {res} .23248491   .42247191       3,811
+  {txt}Free of r {c |}  {res} .11001789   .31305209       1,118
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+.         * How many rooms does the HH have?
+.         tab hh_rooms, sum(poor_npl1) mis
+
+   {txt}How many {c |}
+      rooms {c |}
+ (excluding {c |}
+        the {c |}
+   kitchen, {c |}
+ toilet and {c |}      Summary of Real per adult
+  bathroom) {c |}  consumption is below the national
+   does the {c |}            poverty line
+household o {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          1 {c |}  {res} .24172474   .42822162       2,296
+  {txt}        2 {c |}  {res} .19686649   .39776607       1,468
+  {txt}        3 {c |}  {res} .17525773    .3804326         776
+  {txt}        4 {c |}  {res} .08171206   .27446003         257
+  {txt}        5 {c |}  {res} .05797101   .23540066          69
+  {txt}        6 {c |}  {res}     .0625   .24593469          32
+  {txt}        7 {c |}  {res}         0           0          17
+  {txt}        8 {c |}  {res}       .25          .5           4
+  {txt}        9 {c |}  {res}         0           0           1
+  {txt}       10 {c |}  {res}         0           0           3
+  {txt}       11 {c |}  {res}        .5   .70710678           2
+  {txt}       12 {c |}  {res}         0           0           2
+  {txt}       14 {c |}  {res}         0           0           1
+  {txt}       51 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hh_rooms=2 if hh_rooms!=1
+{txt}(1,165 real changes made)
+
+{com}.         label define roomst 1 "Only one" 2 "Two or more"
+{txt}
+{com}.         label values hh_rooms roomst
+{txt}
+{com}.         tab hh_rooms, sum(poor_npl1) mis
+
+   {txt}How many {c |}
+      rooms {c |}
+ (excluding {c |}
+        the {c |}
+   kitchen, {c |}
+ toilet and {c |}      Summary of Real per adult
+  bathroom) {c |}  consumption is below the national
+   does the {c |}            poverty line
+household o {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+   Only one {c |}  {res} .24172474   .42822162       2,296
+  {txt}Two or mo {c |}  {res} .17242689   .37782281       2,633
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         
+. * Material of the walls
+. fre hh_wall
+{res}
+{txt}hh_walls {hline 2} The walls of the main dwelling are predominantly made of what material?
+{txt}{hline 40}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                                 {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 40}{hline 1}{c +}{hline 44}
+{txt}Valid   1  Wood and mud                  {c |}{res}       3362      68.21      68.21      68.21
+{txt}        2  Wood and thatch               {c |}{res}        230       4.67       4.67      72.87
+{txt}        3  Wood only                     {c |}{res}         94       1.91       1.91      74.78
+{txt}        4  Stone only                    {c |}{res}         43       0.87       0.87      75.65
+{txt}        5  Stone and mud                 {c |}{res}        494      10.02      10.02      85.68
+{txt}        6  Stone and cement              {c |}{res}        215       4.36       4.36      90.04
+{txt}        7  Blocks, plastered with cement {c |}{res}        227       4.61       4.61      94.64
+{txt}        8  Blocks, unplastered           {c |}{res}         11       0.22       0.22      94.87
+{txt}        9  Bricks                        {c |}{res}          4       0.08       0.08      94.95
+{txt}        10 Mud bricks (traditional)      {c |}{res}         19       0.39       0.39      95.33
+{txt}        11 Steel                         {c |}{res}         17       0.34       0.34      95.68
+{txt}        12 Cargo container               {c |}{res}          1       0.02       0.02      95.70
+{txt}        14 Chip wood                     {c |}{res}          2       0.04       0.04      95.74
+{txt}        15 Corrugated iron sheet         {c |}{res}         29       0.59       0.59      96.33
+{txt}        16 Asbestos                      {c |}{res}          1       0.02       0.02      96.35
+{txt}        17 Reed / bamboo                 {c |}{res}         36       0.73       0.73      97.08
+{txt}        18 Other (Specify)               {c |}{res}        144       2.92       2.92     100.00
+{txt}        Total                            {c |}{res}       4929     100.00     100.00           
+{txt}{hline 40}{hline 1}{c BT}{hline 44}
+
+{com}. tab hh_walls, sum(poor_npl1)
+
+  {txt}The walls {c |}
+of the main {c |}
+   dwelling {c |}
+        are {c |}
+predominant {c |}      Summary of Real per adult
+ ly made of {c |}  consumption is below the national
+       what {c |}            poverty line
+  material? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  Wood and  {c |}  {res} .21445568   .41050526       3,362
+  {txt}Wood and  {c |}  {res} .26521739   .44241171         230
+  {txt}Wood only {c |}  {res} .45744681   .50085719          94
+  {txt}Stone onl {c |}  {res}  .1627907   .37354368          43
+  {txt}Stone and {c |}  {res} .19838057   .39918452         494
+  {txt}Stone and {c |}  {res} .05581395   .23009783         215
+  {txt}Blocks, p {c |}  {res} .01321586   .11445045         227
+  {txt}Blocks, u {c |}  {res} .09090909   .30151134          11
+  {txt}   Bricks {c |}  {res}         0           0           4
+  {txt}Mud brick {c |}  {res} .26315789   .45241393          19
+  {txt}    Steel {c |}  {res} .11764706   .33210558          17
+  {txt}Cargo con {c |}  {res}         0           0           1
+  {txt}Chip wood {c |}  {res}         0           0           2
+  {txt}Corrugate {c |}  {res} .17241379   .38442587          29
+  {txt} Asbestos {c |}  {res}         0           0           1
+  {txt}Reed / ba {c |}  {res} .58333333          .5          36
+  {txt}Other (Sp {c |}  {res} .20833333   .40753394         144
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. gen hh_walls_c=hh_walls
+{txt}
+{com}. replace hh_walls=0 if hh_walls_c<=3 | hh_walls_c==10 | hh_walls_c>=17
+{txt}(3,885 real changes made)
+
+{com}. replace hh_walls=1 if (hh_walls_c>=4 & hh_walls_c<=9) | (hh_walls_c>=11 & hh_walls_c<=16)
+{txt}(1,044 real changes made)
+
+{com}. label define walls 0 "Wood and mud, Wood and Thatch, wood only, Mud Bricks (Traditional), Reed/Bamboo, Other" 1 "Stone only, Stone and mud, Stone and cement, Blocks (plastered with cement), Blocks (unplastered bricks), Steel (Lamera), Cargo Container, Chip Wood, Corrugated Iron Sheet, Asbestos"
+{txt}
+{com}. label values hh_walls walls
+{txt}
+{com}. drop hh_walls_c
+{txt}
+{com}. tab hh_walls, sum(poor_npl1) mis
+
+  {txt}The walls {c |}
+of the main {c |}
+   dwelling {c |}
+        are {c |}
+predominant {c |}      Summary of Real per adult
+ ly made of {c |}  consumption is below the national
+       what {c |}            poverty line
+  material? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  Wood and  {c |}  {res} .22676963   .41879626       3,885
+  {txt}Stone onl {c |}  {res} .12260536   .32814086       1,044
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. 
+.         *Main material of roof
+.         tab hh_roof, sum(poor_npl1)
+
+{txt}The roof of {c |}
+   the main {c |}
+dwelling is {c |}
+predominant {c |}      Summary of Real per adult
+ ly made of {c |}  consumption is below the national
+       what {c |}            poverty line
+  material? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  Corrugate {c |}  {res} .14522293   .35238158       3,140
+  {txt}Concrete  {c |}  {res} .03921569   .19603921          51
+  {txt}   Thatch {c |}  {res} .33792545   .47319477       1,234
+  {txt}Wood and  {c |}  {res} .25957447    .4393369         235
+  {txt}Reed / ba {c |}  {res} .35616438   .48217859          73
+  {txt}Plastic c {c |}  {res}    .28125   .45196937          96
+  {txt} Asbestos {c |}  {res} .11111111   .33333333           9
+  {txt}   Bricks {c |}  {res}         0           0           1
+  {txt}   Others {c |}  {res} .21111111   .41038334          90
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         gen hh_roof_c=hh_roof
+{txt}
+{com}.         replace hh_roof=0 if (hh_roof_c>=3 | hh_roof_c<=6) | hh_roof_c==9
+{txt}(4,929 real changes made)
+
+{com}.         replace hh_roof=1 if hh_roof_c<=2 | hh_roof_c==7 | hh_roof_c==8
+{txt}(3,201 real changes made)
+
+{com}.         label define roof 0 "Thatch, Mud and wood, Bamboo/Reed, Plastic Canvas, Other" 1 "Corrugated iron sheets, Concrete/Cement, Asbestos, Bricks"
+{txt}
+{com}.         label values hh_roof roof
+{txt}
+{com}.         drop hh_roof_c 
+{txt}
+{com}.         
+. *Main material of floor
+. tab hh_floor, sum(poor_npl1)
+
+  {txt}The floor {c |}
+of the main {c |}
+dwelling is {c |}
+predominant {c |}      Summary of Real per adult
+ ly made of {c |}  consumption is below the national
+       what {c |}            poverty line
+  material? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  Mud / dun {c |}  {res} .24800617   .43191099       3,887
+  {txt}Reed / ba {c |}  {res} .09090909    .2919371          33
+  {txt}Wood plan {c |}  {res} .12903226    .3407771          31
+  {txt}Parquet o {c |}  {res}        .2    .4472136           5
+  {txt}Cement sc {c |}  {res} .04150943   .19959086         795
+  {txt}Plastic t {c |}  {res} .06666667   .25370813          30
+  {txt}Cement ti {c |}  {res} .03278689   .17955622          61
+  {txt}Brick Til {c |}  {res}         0           0          35
+  {txt}Ceramic / {c |}  {res}         0           0          44
+  {txt}   Others {c |}  {res}         0           0           8
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. gen hh_floor_c=hh_floor
+{txt}
+{com}. replace hh_floor=0 if hh_floor_c==1
+{txt}(3,887 real changes made)
+
+{com}. replace hh_floor=1 if hh_floor_c>=2
+{txt}(1,042 real changes made)
+
+{com}. label define floor 0 "Mud/Dung" 1 "Bamboo/Reed, Wood Planks, Parquet or polished wood, Cement screed, Plastic tiles, Cement tiles, Brick tiles, Cemramic/Marble tiles, Others"
+{txt}
+{com}. label values hh_floor floor
+{txt}
+{com}. drop hh_floor_c
+{txt}
+{com}. 
+.         *Type of kitchen
+.         tab hh_kitchen, sum(poor_npl1)
+
+  {txt}What type {c |}
+ of kitchen {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+       use? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  No Kitche {c |}  {res} .27607362   .44722518       1,304
+  {txt}A room us {c |}  {res} .22844828   .41998378       1,392
+  {txt}A room us {c |}  {res} .16378433   .37017391       1,966
+  {txt}A room us {c |}  {res} .03592814   .18667075         167
+  {txt}A room us {c |}  {res} .02469136   .15614966          81
+  {txt}Others sp {c |}  {res} .05263158   .22941573          19
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hh_kitchen=0 if hh_kitchen==1
+{txt}(1,304 real changes made)
+
+{com}.         replace hh_kitchen=1 if hh_kitchen>1
+{txt}(3,625 real changes made)
+
+{com}.         label define kitchen 0 "No kitchen" 1 "A room used for traditional kitchen inside the houseing unit, A roome used for traditional kitchen outside the housing unit, A room used for modern kitchen outside the housing unit, Other"
+{txt}
+{com}.         label values hh_kitchen kitchen
+{txt}
+{com}.         
+. *Oven type
+. tab hh_oventype, mis sum(poor_npl1)
+
+{txt}What is the {c |}
+    primary {c |}
+    type of {c |}
+       oven {c |}
+    (Mitad) {c |}
+   used for {c |}      Summary of Real per adult
+     baking {c |}  consumption is below the national
+Injera/brea {c |}            poverty line
+         d? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  Tradition {c |}  {res} .23157895     .421913       2,945
+  {txt}Tradition {c |}  {res} .21122449   .40838571         980
+  {txt}Improved  {c |}  {res}  .0776699   .26830345         206
+  {txt}Electric  {c |}  {res} .03455724   .18285308         463
+  {txt}     None {c |}  {res} .26268657   .44075188         335
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. gen hh_oventype_c=hh_oventype
+{txt}
+{com}. replace hh_oventype=0 if hh_oventype_c<=2 | hh_oventype_c==5
+{txt}(4,260 real changes made)
+
+{com}. replace hh_oventype=1 if hh_oventype_c==3 | hh_oventype_c==4
+{txt}(669 real changes made)
+
+{com}. label define oven 0 "Traditional mitad (oven) removable, Traditional mitad (oven) not removable, None" 1 "Improved energy saving mitad (rural technology product), Electric mitad"
+{txt}
+{com}. label values hh_oventype oven
+{txt}
+{com}. drop hh_oventype_c
+{txt}
+{com}. 
+.         *Type of toilet
+.         tab hh_toilet, sum(poor_npl1)
+
+  {txt}What type {c |}
+  of toilet {c |}
+ facilities {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+       use? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  Flush toi {c |}  {res} .01865672   .13556259         268
+  {txt}Pit latri {c |}  {res} .06563707   .24812608         259
+  {txt}Pit latri {c |}  {res} .18560794   .38888647       2,015
+  {txt}PIT LATRI {c |}  {res} .24008574   .42736441         933
+  {txt}COMPOSTIN {c |}  {res} .28571429   .45834925          35
+  {txt}   Bucket {c |}  {res} .03846154   .19611614          26
+  {txt}Field /fo {c |}  {res} .27062229   .44444212       1,382
+  {txt}Others(SP {c |}  {res} .36363636   .50452498          11
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         gen hh_toilet_c=hh_toilet
+{txt}
+{com}.         replace hh_toilet=0 if hh_toilet_c==5 | hh_toilet_c==4 | hh_toilet_c==7 | hh_toilet_c==8
+{txt}(2,361 real changes made)
+
+{com}.         replace hh_toilet=1 if hh_toilet_c<=3 | hh_toilet_c==6
+{txt}(2,300 real changes made)
+
+{com}.         label define toilett 0 "PIT Latrine without slab, Composting Toilet, Field/Forest, Other" 1 "Flush toilet, PIT Latrine (ventilated VIP), PIT latrine with slab, Bucket"
+{txt}
+{com}.         label values hh_toilet toilett
+{txt}
+{com}.         drop hh_toilet_c
+{txt}
+{com}.         
+. *Is the toilet shared with other households?
+. tab hh_toiletshared, sum(poor_npl1)
+
+    {txt}Is this {c |}
+     toilet {c |}
+   facility {c |}      Summary of Real per adult
+shared with {c |}  consumption is below the national
+      other {c |}            poverty line
+households? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .21880416   .41352508       2,308
+  {txt}      Yes {c |}  {res} .10492333   .30657834       1,239
+  {txt}Toilet=Fi {c |}  {res} .27062229   .44444212       1,382
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. recode hh_toiletshared (3=0) (0=1) (1=2)
+{txt}(4929 changes made to {bf:hh_toiletshared})
+
+{com}. label define share 0 "Toilet=Field/Forest" 1 "No" 2 "Yes"
+{txt}
+{com}. label values hh_toiletshared share
+{txt}
+{com}. 
+.         *Washing location in the household
+.         tab hh_wash, sum(poor_npl1)
+
+ {txt}Is there a {c |}
+   place in {c |}
+       your {c |}
+dwelling or {c |}
+  yard/plot {c |}
+      where {c |}      Summary of Real per adult
+  household {c |}  consumption is below the national
+members can {c |}            poverty line
+      wash  {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  YES, IN D {c |}  {res} .11180124   .31561222         322
+  {txt}YES, IN Y {c |}  {res} .13476263   .34173162         653
+  {txt}       No {c |}  {res} .22382398   .41685819       3,954
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         recode hh_wash (3=0) (2=1) (1=2)
+{txt}(4929 changes made to {bf:hh_wash})
+
+{com}.         label define washi 0 "No" 1 "Yes, in yard/plot" 2 "Yes, in dwelling"
+{txt}
+{com}.         label values hh_wash washi
+{txt}
+{com}.         
+. *Water in the washing location
+. tab hh_washwater, sum(poor_npl1)
+
+    {txt}At this {c |}
+ moment, is {c |}
+there water {c |}
+  available {c |}
+    at this {c |}      Summary of Real per adult
+       hand {c |}  consumption is below the national
+    washing {c |}            poverty line
+  location? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+         No {c |}  {res} .18635171   .38990224         381
+  {txt}      Yes {c |}  {res} .08922559   .28530935         594
+  {txt}No washin {c |}  {res} .22382398   .41685819       3,954
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. recode hh_washwater (3=0) (0=1) (1=2)
+{txt}(4929 changes made to {bf:hh_washwater})
+
+{com}. label define ww 0 "No washing location" 1 "No" 2 "Yes"
+{txt}
+{com}. label values hh_washwater ww
+{txt}
+{com}. drop hh_washwater //Dropping since one of the categories contain less than 10% of the observations.
+{txt}
+{com}.         
+.         *Soap in the washing location
+.         tab hh_washsoap, sum(poor_npl1)
+
+    {txt}At this {c |}
+ moment, do {c |}
+   you have {c |}
+  any soap, {c |}
+ detergent, {c |}
+  ash, mud, {c |}      Summary of Real per adult
+    or sand {c |}  consumption is below the national
+  available {c |}            poverty line
+        for {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  Yes, soap {c |}  {res} .07656968   .26611127         653
+  {txt} Yes, ash {c |}  {res} .30487805   .46318874          82
+  {txt}Yes, mud/ {c |}  {res}         0           0           4
+  {txt}       No {c |}  {res} .21304348   .41035116         230
+  {txt}No washin {c |}  {res} .22348485   .41663318       3,960
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         drop hh_washsoap //Dropping since one of the categories contain less than 10% of the observations.
+{txt}
+{com}.         
+. *Solid waste disposal facilities
+. tab hh_disposal, sum(poor_npl1)
+
+  {txt}What type {c |}
+   of solid {c |}
+      waste {c |}
+   disposal {c |}
+ facilities {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+       use? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  Waste dis {c |}  {res} .04587156   .20952712         327
+  {txt}Waste dis {c |}  {res}  .1092437   .31326374         119
+  {txt}  Dug-out {c |}  {res} .18206522   .38642366         368
+  {txt}Throw awa {c |}  {res}  .2749004   .44659118       1,757
+  {txt}Use as fe {c |}  {res} .28358209    .4509608       1,005
+  {txt}Buring th {c |}  {res} .12274959   .32841842         611
+  {txt}Collected {c |}  {res} .13059701   .33758952         268
+  {txt}Other (Sp {c |}  {res} .07594937   .26519697         474
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. gen hh_disposal_c=hh_disposal
+{txt}
+{com}. replace hh_disposal=1 if hh_disposal_c<=3 | hh_disposal_c>=6
+{txt}(1,840 real changes made)
+
+{com}. replace hh_disposal=0 if hh_disposal_c==4 | hh_disposal_c==5
+{txt}(2,762 real changes made)
+
+{com}. label define dispo 0 "Throw away, Used as fertilizer" 1 "Waste disposable vehicle, Waste disposal container, Dug-out, Burning the waste, Collected by municipality (public pump), Other"
+{txt}
+{com}. label values hh_disposal dispo
+{txt}
+{com}. drop hh_disposal_c
+{txt}
+{com}. 
+.         *Main source of water
+.         tab hh_water, sum(poor_npl1)
+
+{txt}What is the {c |}
+main source {c |}
+of drinking {c |}      Summary of Real per adult
+   water in {c |}  consumption is below the national
+  the rainy {c |}            poverty line
+    season? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  PIPED WAT {c |}  {res} .02941176   .16937337         204
+  {txt}PIPED WAT {c |}  {res} .05410822   .22634454         998
+  {txt}PIPED WAT {c |}  {res} .21328125   .40978476       1,280
+  {txt}TUBEWELL/ {c |}  {res} .24336283   .43006482         226
+  {txt}PROTECTED {c |}  {res} .27735369   .44826322         393
+  {txt}UNPROTECT {c |}  {res} .35135135   .47901351         148
+  {txt}PROTECTED {c |}  {res} .33043478   .47088179         460
+  {txt}UNPROTECT {c |}  {res} .28333333   .45103468         540
+  {txt}RAINWATER {c |}  {res} .22916667    .4247444          48
+  {txt}PIPED WAT {c |}  {res} .15037594   .35879091         133
+  {txt}BOTTLED W {c |}  {res}         0           0           4
+  {txt}CART WITH {c |}  {res}         0           0           8
+  {txt}TANKER-TR {c |}  {res}       .08   .27688746          25
+  {txt}SURFACE W {c |}  {res} .26896552   .44393256         435
+  {txt}OTHER,SPE {c |}  {res} .13636364   .35125009          22
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20450853   .40338299       4,924
+{txt}
+{com}.         gen hh_water_c=hh_water
+{txt}(5 missing values generated)
+
+{com}.         replace hh_water=0 if (hh_water_c>=3 & hh_water_c<=9) | hh_water_c==14
+{txt}(3,530 real changes made)
+
+{com}.         replace hh_water=1 if hh_water_c<3 | (hh_water_c>=10 & hh_water_c<=13) | hh_water_c==15
+{txt}(1,190 real changes made)
+
+{com}.         label define wat 0 "Piped water public tap / Standpipe, Tubwell/Borehole, Protected dug well, Unprotected dug well, Protected spring, Unprotected spring, Rainwater collection, " 1 "Piped water into dwelling, Piped water into yard/plot, Piped water kiosk/retailer, Bottled water, Cart with small tank/drum, Tanker/truck, Other"
+{txt}
+{com}.         label values hh_water wat
+{txt}
+{com}.         drop hh_water_c
+{txt}
+{com}.         
+. *Source of light
+. tab hh_light, sum(poor_npl1)
+
+{txt}What is the {c |}
+main Source {c |}      Summary of Real per adult
+   of light {c |}  consumption is below the national
+    for the {c |}            poverty line
+ household? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  Electrici {c |}  {res} .06129398   .24000503         881
+  {txt}Electrici {c |}  {res} .10239234   .30330873       1,045
+  {txt}Electrici {c |}  {res} .11538462   .32260254          52
+  {txt}Solar ene {c |}  {res} .14742451   .35484387         563
+  {txt}  Bio gas {c |}  {res} .66666667   .57735027           3
+  {txt}Electrica {c |}  {res}  .2173913   .42174117          23
+  {txt}  Lantern {c |}  {res}         0           0           2
+  {txt}Light fro {c |}  {res} .27825342   .44833084       1,168
+  {txt}Kerosene  {c |}  {res} .22535211    .4207878          71
+  {txt}Kerosene  {c |}  {res} .33010883   .47053662         827
+  {txt}Candle/wa {c |}  {res} .33333333   .57735027           3
+  {txt}Fire wood {c |}  {res} .50579151   .50093445         259
+  {txt}Other spe {c |}  {res}     .1875   .39655777          32
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}. gen hh_light_c=hh_light
+{txt}
+{com}. replace hh_light=0 if hh_light_c==5 | hh_light_c==6 | (hh_light_c>=8 & hh_light_c<=12)
+{txt}(2,354 real changes made)
+
+{com}. replace hh_light=1 if hh_light_c<=4 | hh_light_c==7 | hh_light_c==13
+{txt}(1,694 real changes made)
+
+{com}. label define lig 0 "Bio gas, Electrical battery, Light from dry cell with switch, Kerosene light lamp (imported), Local kerosene lamp (Kuraz), Candle/Wax, Fire wood" 1 "Electricity meter- private, Electricity meter- shared, Electricity from generator, Solar energy, Lantern, Other"
+{txt}
+{com}. label values hh_light lig
+{txt}
+{com}. drop hh_light_c
+{txt}
+{com}. 
+.         *Energy for cooking
+.         tab hh_cook, sum(poor_npl1)
+
+{txt}What is the {c |}      Summary of Real per adult
+main source {c |}  consumption is below the national
+ of cooking {c |}            poverty line
+      fuel? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+  Collectin {c |}  {res} .27517241   .44667814       2,900
+  {txt}Purchase  {c |}  {res} .06957708   .25460665         733
+  {txt} Charcoal {c |}  {res} .04273504   .20254787         351
+  {txt}Crop resi {c |}  {res} .34031414      .47506         191
+  {txt}Dung / ma {c |}  {res} .21212121   .40969798         231
+  {txt}  Sawdust {c |}  {res} .33333333          .5           9
+  {txt} Kerosene {c |}  {res} .13333333   .35186578          15
+  {txt}Butane /  {c |}  {res} .13333333   .35186578          15
+  {txt}Electrici {c |}  {res}  .0326087   .17785197         368
+  {txt}Solar ene {c |}  {res} .28571429   .48795004           7
+  {txt}     None {c |}  {res}   .046875   .21304203          64
+  {txt}Other spe {c |}  {res} .15555556    .3665289          45
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         gen hh_cook_c=hh_cook
+{txt}
+{com}.         replace hh_cook=0 if hh_cook_c==1 | (hh_cook_c>=4 & hh_cook_c<=6) | hh_cook_c==10
+{txt}(3,338 real changes made)
+
+{com}.         replace hh_cook=1 if hh_cook_c==2 | hh_cook_c==3 | hh_cook_c==7 | hh_cook_c==8 | hh_cook_c==9 | hh_cook_c>10
+{txt}(1,591 real changes made)
+
+{com}.         label define coo 0 "Collecting fire wood, Crop residue / leaves, Dung/Manure, Saw dust, Solar energy, Biogas, None, Other" 1 "Purchase fire wood, Charcoal, Kerosene, Butane - Gas, Electricity, Solar Energy"
+{txt}
+{com}.         label values hh_cook coo
+{txt}
+{com}.         drop hh_cook_c
+{txt}
+{com}.         
+.         *How many assets
+. tab hmany3, sum(poor_npl1)
+
+   {txt}How many {c |}
+   ELECTRIC {c |}
+ STOVE does {c |}      Summary of Real per adult
+        the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .22657343   .41866307       4,290
+  {txt}        1 {c |}  {res} .04612546   .20995054         542
+  {txt}        2 {c |}  {res} .10447761   .30818768          67
+  {txt}        3 {c |}  {res} .26666667   .45773771          15
+  {txt}        4 {c |}  {res}         0           0           7
+  {txt}        5 {c |}  {res} .16666667   .40824829           6
+  {txt}        6 {c |}  {res}         0           0           1
+  {txt}        7 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany3=1 if hmany3>=1
+{txt}(97 real changes made)
+
+{com}.         label define cero 0 "0" 1 "1 or more"
+{txt}
+{com}.         label values hmany3 cero
+{txt}
+{com}.         ren hmany3 hmany03
+{res}{txt}
+{com}. tab hmany4, sum(poor_npl1)
+
+   {txt}How many {c |}
+BLANKET/GAB {c |}      Summary of Real per adult
+ I does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res}  .2875226   .45301707         553
+  {txt}        1 {c |}  {res} .25658454   .43693376       1,177
+  {txt}        2 {c |}  {res} .19953235   .39980467       1,283
+  {txt}        3 {c |}  {res} .17443409   .37973523         751
+  {txt}        4 {c |}  {res} .17592593   .38111018         540
+  {txt}        5 {c |}  {res} .14079422   .34843868         277
+  {txt}        6 {c |}  {res}  .0621118   .24211157         161
+  {txt}        7 {c |}  {res} .10526316   .30962019          57
+  {txt}        8 {c |}  {res} .10526316   .30962019          57
+  {txt}        9 {c |}  {res} .05882353   .24253563          17
+  {txt}       10 {c |}  {res} .11111111   .32025631          27
+  {txt}       11 {c |}  {res}         0           0           9
+  {txt}       12 {c |}  {res}         0           0          11
+  {txt}       13 {c |}  {res}         0           0           1
+  {txt}       14 {c |}  {res}         0           0           1
+  {txt}       15 {c |}  {res}         0           0           1
+  {txt}       16 {c |}  {res} .33333333   .57735027           3
+  {txt}       19 {c |}  {res}         0           0           1
+  {txt}       20 {c |}  {res}         0           0           2
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany4=2 if hmany4>=2
+{txt}(1,916 real changes made)
+
+{com}.         label define two 0 "0" 1 "1" 2 "2 or more"
+{txt}
+{com}.         label values hmany4 two
+{txt}
+{com}.         ren hmany4 hmany04
+{res}{txt}
+{com}. tab hmany5, sum(poor_npl1)
+
+   {txt}How many {c |}
+   MATTRESS {c |}
+ AND/OR BED {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .33463643   .47204779       1,279
+  {txt}        1 {c |}  {res} .19342252   .39509146       1,794
+  {txt}        2 {c |}  {res} .15442561    .3615265       1,062
+  {txt}        3 {c |}  {res} .11471322   .31907363         401
+  {txt}        4 {c |}  {res} .09090909   .28813539         220
+  {txt}        5 {c |}  {res} .02739726   .16436771          73
+  {txt}        6 {c |}  {res} .01538462   .12403473          65
+  {txt}        7 {c |}  {res}         0           0          19
+  {txt}        8 {c |}  {res}      .125   .35355339           8
+  {txt}        9 {c |}  {res}         0           0           2
+  {txt}       10 {c |}  {res}         0           0           3
+  {txt}       11 {c |}  {res}         0           0           1
+  {txt}       12 {c |}  {res}         0           0           1
+  {txt}       13 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany5=2 if hmany5>=2
+{txt}(794 real changes made)
+
+{com}.         label values hmany5 two
+{txt}
+{com}.         ren hmany5 hmany05
+{res}{txt}
+{com}. tab hmany6, sum(poor_npl1)
+
+   {txt}How many {c |}
+      WRIST {c |}
+WATCH/CLOCK {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .23185795   .42207308       3,886
+  {txt}        1 {c |}  {res} .10907003   .31190617         871
+  {txt}        2 {c |}  {res} .08391608   .27823649         143
+  {txt}        3 {c |}  {res} .05263158   .22941573          19
+  {txt}        4 {c |}  {res}         0           0           5
+  {txt}        5 {c |}  {res}         0           0           3
+  {txt}        6 {c |}  {res}         0           0           1
+  {txt}        8 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany6=1 if hmany6>=1
+{txt}(172 real changes made)
+
+{com}.         label values hmany6 cero
+{txt}
+{com}.         ren hmany6 hmany06
+{res}{txt}
+{com}. tab hmany8, sum(poor_npl1)
+
+   {txt}How many {c |}
+     MOBILE {c |}
+  TELEPHONE {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .30874704   .46208578       2,115
+  {txt}        1 {c |}  {res}  .1520936   .35922221       1,624
+  {txt}        2 {c |}  {res}  .1064389   .30860136         761
+  {txt}        3 {c |}  {res} .07692308   .26701041         247
+  {txt}        4 {c |}  {res} .06422018   .24627707         109
+  {txt}        5 {c |}  {res}         0           0          39
+  {txt}        6 {c |}  {res} .05882353   .24253563          17
+  {txt}        7 {c |}  {res}         0           0           8
+  {txt}        8 {c |}  {res}        .2    .4472136           5
+  {txt}        9 {c |}  {res}         0           0           1
+  {txt}       10 {c |}  {res}         0           0           2
+  {txt}       12 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany8=2 if hmany8>=2
+{txt}(429 real changes made)
+
+{com}.         label values hmany8 two
+{txt}
+{com}.         ren hmany8 hmany08
+{res}{txt}
+{com}. tab hmany9, sum(poor_npl1)
+
+   {txt}How many {c |}
+ RADIO/TAPE {c |}
+   RECORDER {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .24851367   .43221541       3,364
+  {txt}        1 {c |}  {res} .10941828   .31227144       1,444
+  {txt}        2 {c |}  {res} .12037037   .32691113         108
+  {txt}        3 {c |}  {res}        .2   .42163702          10
+  {txt}        4 {c |}  {res}         0           0           2
+  {txt}        7 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany9=1 if hmany9>=1
+{txt}(121 real changes made)
+
+{com}.         label values hmany9 cero
+{txt}
+{com}.         ren hmany9 hmany09
+{res}{txt}
+{com}. tab hmany10, sum(poor_npl1)
+
+   {txt}How many {c |}
+ TELEVISION {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .25601283   .43648731       3,742
+  {txt}        1 {c |}  {res}   .043058   .20307694       1,138
+  {txt}        2 {c |}  {res} .04651163   .21308263          43
+  {txt}        3 {c |}  {res}         0           0           5
+  {txt}        4 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany10=1 if hmany10>=1
+{txt}(49 real changes made)
+
+{com}.         label values hmany10 cero
+{txt}
+{com}. tab hmany11, sum(poor_npl1)
+
+   {txt}How many {c |}
+CD/VCD/DVD/ {c |}
+ VIDEO DECK {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .23655139   .42501554       4,164
+  {txt}        1 {c |}  {res} .03005464   .17085445         732
+  {txt}        2 {c |}  {res} .07142857   .26226526          28
+  {txt}        3 {c |}  {res}         0           0           3
+  {txt}        4 {c |}  {res}         0           0           1
+  {txt}       20 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany11=1 if hmany11>=1
+{txt}(33 real changes made)
+
+{com}.         label values hmany11 cero
+{txt}
+{com}. tab hmany12, sum(poor_npl1)
+
+   {txt}How many {c |}
+   SATELITE {c |}
+  DISH does {c |}      Summary of Real per adult
+        the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .24384175   .42945179       4,019
+  {txt}        1 {c |}  {res} .03071672   .17264738         879
+  {txt}        2 {c |}  {res}       .08   .27688746          25
+  {txt}        3 {c |}  {res}         0           0           2
+  {txt}        4 {c |}  {res}         0           0           1
+  {txt}        7 {c |}  {res}         0           0           1
+  {txt}        8 {c |}  {res}         0           0           2
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany12=1 if hmany12>=1
+{txt}(31 real changes made)
+
+{com}.         label values hmany12 cero
+{txt}
+{com}. tab hmany13, sum(poor_npl1)
+
+   {txt}How many {c |}
+   SOFA SET {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .22465438    .4174026       4,340
+  {txt}        1 {c |}  {res} .03976143   .19559273         503
+  {txt}        2 {c |}  {res} .17857143   .39002103          28
+  {txt}        3 {c |}  {res} .35714286   .49724516          14
+  {txt}        4 {c |}  {res} .11764706   .33210558          17
+  {txt}        5 {c |}  {res} .13333333   .35186578          15
+  {txt}        6 {c |}  {res}         0           0           3
+  {txt}        7 {c |}  {res}         0           0           3
+  {txt}        8 {c |}  {res}         0           0           4
+  {txt}        9 {c |}  {res}         0           0           1
+  {txt}       15 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany13=1 if hmany13>=1
+{txt}(86 real changes made)
+
+{com}.         label values hmany13 cero
+{txt}
+{com}. tab hmany20, sum(poor_npl1)
+
+   {txt}How many {c |}
+MITAD-ELECT {c |}
+   RIC does {c |}      Summary of Real per adult
+        the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .22466561   .41740924       4,411
+  {txt}        1 {c |}  {res} .03522505   .18452881         511
+  {txt}        2 {c |}  {res}         0           0           7
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany20=1 if hmany20>=1
+{txt}(7 real changes made)
+
+{com}.         label values hmany20 cero
+{txt}
+{com}. tab hmany21, sum(poor_npl1)
+
+   {txt}How many {c |}
+     ENERGY {c |}
+     SAVING {c |}
+      STOVE {c |}
+   (LAKECH, {c |}
+  MIRT ETC) {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res}  .2252481   .41779382       4,333
+  {txt}        1 {c |}  {res} .05882353   .23550411         561
+  {txt}        2 {c |}  {res}         0           0          30
+  {txt}        3 {c |}  {res}         0           0           5
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany21=1 if hmany21>=1
+{txt}(35 real changes made)
+
+{com}.         label values hmany21 cero
+{txt}
+{com}. tab hmany22, sum(poor_npl1)
+
+   {txt}How many {c |}
+REFRIGERATO {c |}      Summary of Real per adult
+ R does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .22487607   .41754773       4,438
+  {txt}        1 {c |}  {res} .02169197   .14583404         461
+  {txt}        2 {c |}  {res} .04166667   .20412415          24
+  {txt}        3 {c |}  {res}         0           0           4
+  {txt}        4 {c |}  {res}         0           0           1
+  {txt}       28 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany22=1 if hmany22>=1
+{txt}(30 real changes made)
+
+{com}.         label values hmany22 cero 
+{txt}
+{com}.         drop hmany22 //Dropping because of lack of variation
+{txt}
+{com}. tab hmany24, sum(poor_npl1)
+
+   {txt}How many {c |}
+JEWELS GOLD {c |}
+        (IN {c |}
+ GRAMS)does {c |}      Summary of Real per adult
+        the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .23322524   .42293717       4,009
+  {txt}        1 {c |}  {res} .13402062   .34244422          97
+  {txt}        2 {c |}  {res} .05555556   .23034469          90
+  {txt}        3 {c |}  {res} .13186813   .34022186          91
+  {txt}        4 {c |}  {res}      .075   .26505314          80
+  {txt}        5 {c |}  {res}  .0862069   .28312063          58
+  {txt}        6 {c |}  {res} .13235294   .34139362          68
+  {txt}        7 {c |}  {res}     .0625   .24593469          32
+  {txt}        8 {c |}  {res} .08333333   .28030596          36
+  {txt}        9 {c |}  {res}         0           0          15
+  {txt}       10 {c |}  {res} .03703704   .19002924          81
+  {txt}       11 {c |}  {res} .14285714   .36313652          14
+  {txt}       12 {c |}  {res} .09302326    .2939026          43
+  {txt}       13 {c |}  {res}         0           0           4
+  {txt}       14 {c |}  {res} .07142857   .26726124          14
+  {txt}       15 {c |}  {res}         0           0          29
+  {txt}       16 {c |}  {res}         0           0           1
+  {txt}       17 {c |}  {res}         0           0           5
+  {txt}       18 {c |}  {res}         0           0           8
+  {txt}       19 {c |}  {res}         0           0           3
+  {txt}       20 {c |}  {res} .04166667   .20412415          24
+  {txt}       21 {c |}  {res}         0           0           2
+  {txt}       22 {c |}  {res}         0           0           3
+  {txt}       23 {c |}  {res}       .25          .5           4
+  {txt}       24 {c |}  {res} .11764706   .33210558          17
+  {txt}       25 {c |}  {res}         0           0          12
+  {txt}       26 {c |}  {res}         0           0           1
+  {txt}       27 {c |}  {res}         0           0           2
+  {txt}       28 {c |}  {res} .33333333   .57735027           3
+  {txt}       29 {c |}  {res}         0           0           3
+  {txt}       30 {c |}  {res}         0           0          23
+  {txt}       32 {c |}  {res}         0           0           3
+  {txt}       33 {c |}  {res}         0           0           2
+  {txt}       34 {c |}  {res} .33333333   .57735027           3
+  {txt}       35 {c |}  {res}         0           0           2
+  {txt}       36 {c |}  {res}         0           0           4
+  {txt}       37 {c |}  {res}         0           0           1
+  {txt}       39 {c |}  {res}         0           0           1
+  {txt}       40 {c |}  {res}         0           0           4
+  {txt}       41 {c |}  {res}         0           0           1
+  {txt}       42 {c |}  {res}         0           0           4
+  {txt}       45 {c |}  {res}         0           0           1
+  {txt}       46 {c |}  {res}         0           0           1
+  {txt}       50 {c |}  {res}      .125   .35355339           8
+  {txt}       52 {c |}  {res}         0           0           2
+  {txt}       58 {c |}  {res}         0           0           1
+  {txt}       60 {c |}  {res}         0           0           3
+  {txt}       61 {c |}  {res}         0           0           1
+  {txt}       65 {c |}  {res}         0           0           1
+  {txt}       68 {c |}  {res}         0           0           1
+  {txt}       70 {c |}  {res}         0           0           4
+  {txt}       71 {c |}  {res}         0           0           1
+  {txt}       75 {c |}  {res}         0           0           2
+  {txt}       78 {c |}  {res}         0           0           1
+  {txt}       80 {c |}  {res}         0           0           2
+  {txt}       89 {c |}  {res}         1           0           1
+  {txt}       99 {c |}  {res}        .5   .70710678           2
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         drop hmany24 //Dropping because the question may be difficlt to ask. 
+{txt}
+{com}. tab hmany25, sum(poor_npl1)
+
+   {txt}How many {c |}
+     JEWELS {c |}
+ SILVER (IN {c |}
+GRAMS) does {c |}      Summary of Real per adult
+        the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .22979478   .42075408       3,947
+  {txt}        1 {c |}  {res} .11111111   .31514631         180
+  {txt}        2 {c |}  {res} .06097561   .24075811          82
+  {txt}        3 {c |}  {res} .16666667   .37553381          66
+  {txt}        4 {c |}  {res} .11904762   .32777007          42
+  {txt}        5 {c |}  {res}        .1   .30253169          60
+  {txt}        6 {c |}  {res}       .05   .21978418          60
+  {txt}        7 {c |}  {res} .05555556   .23570226          18
+  {txt}        8 {c |}  {res}         0           0          30
+  {txt}        9 {c |}  {res}         0           0          10
+  {txt}       10 {c |}  {res}  .0617284   .24216105          81
+  {txt}       11 {c |}  {res} .33333333   .57735027           3
+  {txt}       12 {c |}  {res} .08108108   .27672473          37
+  {txt}       13 {c |}  {res}         0           0           4
+  {txt}       14 {c |}  {res}  .2173913   .42174117          23
+  {txt}       15 {c |}  {res} .16666667   .37904902          30
+  {txt}       16 {c |}  {res} .16666667   .40824829           6
+  {txt}       17 {c |}  {res}        .5   .57735027           4
+  {txt}       18 {c |}  {res} .14285714   .37796447           7
+  {txt}       19 {c |}  {res}         0           0           3
+  {txt}       20 {c |}  {res}         0           0          44
+  {txt}       21 {c |}  {res}         0           0           1
+  {txt}       22 {c |}  {res} .28571429   .48795004           7
+  {txt}       24 {c |}  {res}      .125   .35355339           8
+  {txt}       25 {c |}  {res}     .1875   .40311289          16
+  {txt}       26 {c |}  {res}         0           0           2
+  {txt}       27 {c |}  {res}         0           0           2
+  {txt}       28 {c |}  {res}  .2195122   .41905818          41
+  {txt}       29 {c |}  {res}         0           0           1
+  {txt}       30 {c |}  {res} .09090909   .29424494          22
+  {txt}       31 {c |}  {res}        .5   .70710678           2
+  {txt}       32 {c |}  {res}         1           0           1
+  {txt}       34 {c |}  {res} .33333333   .57735027           3
+  {txt}       35 {c |}  {res}         0           0           6
+  {txt}       36 {c |}  {res}         0           0           4
+  {txt}       37 {c |}  {res}         0           0           1
+  {txt}       40 {c |}  {res}         0           0           3
+  {txt}       41 {c |}  {res}         0           0           2
+  {txt}       42 {c |}  {res}         0           0           2
+  {txt}       45 {c |}  {res}         0           0           3
+  {txt}       47 {c |}  {res}         0           0           1
+  {txt}       50 {c |}  {res} .11111111   .33333333           9
+  {txt}       52 {c |}  {res}         0           0           2
+  {txt}       53 {c |}  {res}         0           0           1
+  {txt}       56 {c |}  {res} .22222222   .44095855           9
+  {txt}       58 {c |}  {res}         0           0           1
+  {txt}       60 {c |}  {res}         0           0           6
+  {txt}       64 {c |}  {res}       .25   .46291005           8
+  {txt}       66 {c |}  {res}         0           0           1
+  {txt}       67 {c |}  {res}         0           0           2
+  {txt}       68 {c |}  {res}         0           0           1
+  {txt}       70 {c |}  {res}         0           0           1
+  {txt}       72 {c |}  {res}         0           0           1
+  {txt}       75 {c |}  {res}         0           0           2
+  {txt}       80 {c |}  {res}         0           0           2
+  {txt}       90 {c |}  {res}        .4   .54772256           5
+  {txt}       96 {c |}  {res}         0           0           3
+  {txt}       98 {c |}  {res}         0           0           1
+  {txt}       99 {c |}  {res} .11111111   .33333333           9
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         drop hmany25 //Dropping because the question may be difficult to ask. 
+{txt}
+{com}. tab hmany26, sum(poor_npl1)
+
+   {txt}How many {c |}
+   WARDROBE {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .23681567   .42518162       3,982
+  {txt}        1 {c |}  {res} .07291667   .26015026         864
+  {txt}        2 {c |}  {res} .05172414    .2234038          58
+  {txt}        3 {c |}  {res}         0           0           9
+  {txt}        5 {c |}  {res}         0           0           2
+  {txt}        6 {c |}  {res}         0           0           2
+  {txt}        7 {c |}  {res}         0           0           3
+  {txt}        8 {c |}  {res}         0           0           2
+  {txt}       10 {c |}  {res}         0           0           1
+  {txt}       13 {c |}  {res}         0           0           1
+  {txt}       16 {c |}  {res}         0           0           1
+  {txt}       20 {c |}  {res}         0           0           2
+  {txt}       40 {c |}  {res}         0           0           1
+  {txt}       42 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany26=1 if hmany26>=1
+{txt}(83 real changes made)
+
+{com}.         label values hmany26 cero
+{txt}
+{com}. tab hmany27, sum(poor_npl1)
+
+   {txt}How many {c |}
+   HELF FOR {c |}
+    STORING {c |}
+ GOODS does {c |}      Summary of Real per adult
+        the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .23945441   .42680441       3,959
+  {txt}        1 {c |}  {res} .06533776   .24725785         903
+  {txt}        2 {c |}  {res} .03278689   .17955622          61
+  {txt}        3 {c |}  {res}         0           0           4
+  {txt}       31 {c |}  {res}         0           0           1
+  {txt}       45 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany27=1 if hmany27>=1
+{txt}(67 real changes made)
+
+{com}.         label values hmany27 cero
+{txt}
+{com}. tab hmany30, sum(poor_npl1)
+
+   {txt}How many {c |}
+     SICKLE {c |}
+   (MACHID) {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .14144028    .3485503       2,319
+  {txt}        1 {c |}  {res}  .2575889   .43749613       1,153
+  {txt}        2 {c |}  {res} .27272727   .44565977         748
+  {txt}        3 {c |}  {res} .31054131    .4633758         351
+  {txt}        4 {c |}  {res} .23958333   .42794509         192
+  {txt}        5 {c |}  {res} .12903226   .33705265          93
+  {txt}        6 {c |}  {res} .22222222   .42163702          36
+  {txt}        7 {c |}  {res} .23076923   .43852901          13
+  {txt}        8 {c |}  {res} .08333333   .28867513          12
+  {txt}        9 {c |}  {res}         0           0           1
+  {txt}       10 {c |}  {res} .14285714   .37796447           7
+  {txt}       14 {c |}  {res}         0           0           1
+  {txt}       15 {c |}  {res}         0           0           2
+  {txt}       20 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany30=2 if hmany30>=2
+{txt}(709 real changes made)
+
+{com}.         recode hmany30 (2=0) (0=2)
+{txt}(3776 changes made to {bf:hmany30})
+
+{com}.         label define twoo 0 "2 or more" 1 "1" 2 "0"
+{txt}
+{com}.         label values hmany30 twoo
+{txt}
+{com}. tab hmany31, sum(poor_npl1)
+
+   {txt}How many {c |}
+        AXE {c |}
+   (GEJERA) {c |}      Summary of Real per adult
+   does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .16640986   .37250554       3,245
+  {txt}        1 {c |}  {res} .27608347    .4472381       1,246
+  {txt}        2 {c |}  {res}  .2887538   .45387354         329
+  {txt}        3 {c |}  {res} .33333333   .47445571          78
+  {txt}        4 {c |}  {res}        .1   .30779351          20
+  {txt}        5 {c |}  {res}       .25   .46291005           8
+  {txt}        6 {c |}  {res}         0           0           2
+  {txt}        7 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany31=1 if hmany31>=1
+{txt}(438 real changes made)
+
+{com}.         recode hmany31 (0=1) (1=0)
+{txt}(4929 changes made to {bf:hmany31})
+
+{com}.         label define ceroo 0 "1 or more" 1 "0"
+{txt}
+{com}.         label values hmany31 ceroo
+{txt}
+{com}. tab hmany32, sum(poor_npl1)
+
+   {txt}How many {c |}
+   PICK AXE {c |}
+(GESO) does {c |}      Summary of Real per adult
+        the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .19002448   .39238029       3,268
+  {txt}        1 {c |}  {res} .21746432   .41269431       1,191
+  {txt}        2 {c |}  {res}  .2917847   .45522901         353
+  {txt}        3 {c |}  {res} .22058824   .41772619          68
+  {txt}        4 {c |}  {res} .22580645   .42502372          31
+  {txt}        5 {c |}  {res}      .125   .35355339           8
+  {txt}        6 {c |}  {res}        .2    .4472136           5
+  {txt}        7 {c |}  {res}        .5   .70710678           2
+  {txt}        8 {c |}  {res}         1           0           1
+  {txt}       10 {c |}  {res}         0           0           1
+  {txt}       33 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany32=1 if hmany32>=1
+{txt}(470 real changes made)
+
+{com}.         recode hmany32 (0=1) (1=0)
+{txt}(4929 changes made to {bf:hmany32})
+
+{com}.         label values hmany32 ceroo
+{txt}
+{com}. tab hmany33, sum(poor_npl1)
+
+   {txt}How many {c |}
+     PLOUGH {c |}
+(TRADITIONA {c |}      Summary of Real per adult
+L) does the {c |}  consumption is below the national
+  household {c |}            poverty line
+      have? {c |}        Mean   Std. dev.       Freq.
+{hline 12}{c +}{hline 36}
+          0 {c |}  {res} .17125172   .37679356       2,908
+  {txt}        1 {c |}  {res} .27316076   .44573456       1,468
+  {txt}        2 {c |}  {res} .20484581   .40403413         454
+  {txt}        3 {c |}  {res} .14925373   .35902778          67
+  {txt}        4 {c |}  {res}       .25   .44232587          24
+  {txt}        5 {c |}  {res}         0           0           4
+  {txt}        7 {c |}  {res}         0           0           1
+  {txt}       10 {c |}  {res}        .5   .70710678           2
+  {txt}       11 {c |}  {res}         0           0           1
+{txt}{hline 12}{c +}{hline 36}
+      Total {c |}  {res} .20470684   .40352817       4,929
+{txt}
+{com}.         replace hmany33=1 if hmany33>=1
+{txt}(553 real changes made)
+
+{com}.         recode hmany33 (0=1) (1=0)
+{txt}(4929 changes made to {bf:hmany33})
+
+{com}.         label values hmany33 ceroo
+{txt}
+{com}.         
+.         drop hmany11 hmany12 hmany31 hmany32
+{txt}
+{com}.         
+. **C. Save
+.         * Save
+.         save "$clean/$masterdb", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/02 Clean/LSMS/Full datasets/MASTER_2016_Ethiopia_full.dta{rm}
+saved
+{p_end}
+
+{com}.         
+. import delimited "$gps/eth_cluster_RWI.csv", clear
+{res}{txt}(encoding automatically selected: ISO-8859-1)
+{text}(9 vars, 523 obs)
+
+{com}.         e
+
+{txt}end of do-file
+
+
+{com}. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. keep cluster_lat cluster_lon rwi
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. merge 1:m cluster_lat cluster_lon using "$clean/$masterdb"
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}           5,452
+{txt}{col 9}from master{col 30}{res}             523{txt}  (_merge==1)
+{col 9}from using{col 30}{res}           4,929{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}               0{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. 
+{txt}end of do-file
+
+{com}. br rwi if _merge==2
+
+. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. import delimited "$gps/eth_cluster_RWI.csv", clear
+{res}{txt}(encoding automatically selected: ISO-8859-1)
+{text}(9 vars, 523 obs)
+
+{com}. 
+{txt}end of do-file
+
+{com}. br
+
+. use "/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/02 Clean/LSMS/Full datasets/MASTER_2016_Ethiopia_full.dta", clear
+
+. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. ********************************************************************************
+. **      TITLE:          01_Ethiopia_ESS3_selection.do
+. **
+. **      PURPOSE:        Select indicators from original survey modules
+. **
+. **      INPUTS:         ${c -(}raw{c )-}/SEVERAL MODULES.dta
+. **
+. **      OUTPUTS:        ${c -(}clean{c )-}/ESS3_2016.dta
+. **
+. **      AUTHOR:         Manuel Cardona 
+. **
+. **      CREATED:        August 2022
+. ********************************************************************************
+. *Table of Contents
+. *1. 
+. *2. 
+. 
+. 
+. loc cdate: di %td_CCYY_NN_DD date(c(current_date), "DMY")
+{res}{txt}
+{com}. loc cdate = subinstr(trim("`cdate'"), " " , "", .)
+{txt}
+{com}. *log using "${c -(}logs{c )-}/01_Ethiopia_ESS3_selection`cdate'.smcl", replace
+. di `cdate'
+{res}20221010
+{txt}
+{com}. 
+. ******************************************
+. ************PPI - Indicators**************
+. ******************************************
+. 
+. ***********************
+. *** 0. Survey Cover ***
+. ***********************
+. 
+. use "$dta/sect_cover_hh_w3.dta", clear
+{txt}
+{com}. 
+. duplicates report household_id2
+
+{p 0 4}{txt}Duplicates in terms of {res} household_id2{p_end}
+
+{txt}{hline 10}{c TT}{hline 27}
+   Copies {c |} Observations       Surplus
+{hline 10}{c +}{hline 27}
+        1 {c |}         {res}4954             0
+{txt}{hline 10}{c BT}{hline 27}
+
+{com}. unique household_id2    //4,954 unique households
+{txt}Number of unique values of household_id2 is  {res}4954
+{txt}Number of records is  {res}4954
+{txt}
+{com}. 
+. * Keep relevant variables
+. keep household_id2 rural pw_w3 saq01 hh_saq09
+{txt}
+{com}. 
+. * Rural indicator
+. fre rural
+{res}
+{txt}rural {hline 2} EA rural urban indicator
+{txt}{hline 31}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 31}{hline 1}{c +}{hline 44}
+{txt}Valid   1 rural                 {c |}{res}       3272      66.05      66.05      66.05
+{txt}        2 SMALL TOWN            {c |}{res}        427       8.62       8.62      74.67
+{txt}        3 Meduim and large town {c |}{res}       1255      25.33      25.33     100.00
+{txt}        Total                   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 31}{hline 1}{c BT}{hline 44}
+
+{com}. gen urban=(rural!=1) if !mi(rural)
+{txt}
+{com}. label var urban "Urban==1"
+{txt}
+{com}. label define urb 0 "Rural" 1 "Urban"
+{txt}
+{com}. label values urban urb
+{txt}
+{com}. drop rural
+{txt}
+{com}. fre urban
+{res}
+{txt}urban {hline 2} Urban==1
+{txt}{hline 15}{hline 1}{c TT}{hline 44}
+{txt}        {txt}        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 15}{hline 1}{c +}{hline 44}
+{txt}Valid   0 Rural {c |}{res}       3272      66.05      66.05      66.05
+{txt}        1 Urban {c |}{res}       1682      33.95      33.95     100.00
+{txt}        Total   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 15}{hline 1}{c BT}{hline 44}
+
+{com}. 
+.         * Household weights
+.         ren pw_w3 hh_wgt
+{res}{txt}
+{com}.         
+. * Household Size
+. fre hh_saq09
+{res}
+{txt}hh_saq09 {hline 2} Household Size
+{txt}{hline 13}{hline 1}{c TT}{hline 44}
+{txt}        {txt}      {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 13}{hline 1}{c +}{hline 44}
+{txt}Valid   1     {c |}{res}        442       8.92       8.93       8.93
+{txt}        2     {c |}{res}        511      10.31      10.33      19.26
+{txt}        3     {c |}{res}        657      13.26      13.28      32.54
+{txt}        4     {c |}{res}        774      15.62      15.64      48.18
+{txt}        5     {c |}{res}        728      14.70      14.71      62.89
+{txt}        6     {c |}{res}        692      13.97      13.99      76.88
+{txt}        7     {c |}{res}        478       9.65       9.66      86.54
+{txt}        8     {c |}{res}        333       6.72       6.73      93.27
+{txt}        9     {c |}{res}        172       3.47       3.48      96.75
+{txt}        10    {c |}{res}         94       1.90       1.90      98.65
+{txt}        11    {c |}{res}         38       0.77       0.77      99.41
+{txt}        12    {c |}{res}         21       0.42       0.42      99.84
+{txt}        13    {c |}{res}          2       0.04       0.04      99.88
+{txt}        14    {c |}{res}          3       0.06       0.06      99.94
+{txt}        15    {c |}{res}          1       0.02       0.02      99.96
+{txt}        16    {c |}{res}          1       0.02       0.02      99.98
+{txt}        17    {c |}{res}          1       0.02       0.02     100.00
+{txt}        Total {c |}{res}       4948      99.88     100.00           
+{txt}Missing .     {c |}{res}          6       0.12                      
+{txt}Total         {c |}{res}       4954     100.00                      
+{txt}{hline 13}{hline 1}{c BT}{hline 44}
+
+{com}. ren hh_saq09 hh_size
+{res}{txt}
+{com}. 
+.         * Region
+.         fre saq01
+{res}
+{txt}saq01 {hline 2} Region Code
+{txt}{hline 26}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                   {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 26}{hline 1}{c +}{hline 44}
+{txt}Valid   1  Tigray          {c |}{res}        583      11.77      11.77      11.77
+{txt}        2  Afar            {c |}{res}        142       2.87       2.87      14.63
+{txt}        3  Amhara          {c |}{res}       1007      20.33      20.33      34.96
+{txt}        4  Oromia          {c |}{res}        987      19.92      19.92      54.88
+{txt}        5  Somalie         {c |}{res}        262       5.29       5.29      60.17
+{txt}        6  Benshagul Gumuz {c |}{res}        125       2.52       2.52      62.70
+{txt}        7  snnp            {c |}{res}       1121      22.63      22.63      85.32
+{txt}        12 Gambelia        {c |}{res}        114       2.30       2.30      87.63
+{txt}        13 Harari          {c |}{res}        161       3.25       3.25      90.88
+{txt}        14 Addis Ababa     {c |}{res}        247       4.99       4.99      95.86
+{txt}        15 Diredwa         {c |}{res}        205       4.14       4.14     100.00
+{txt}        Total              {c |}{res}       4954     100.00     100.00           
+{txt}{hline 26}{hline 1}{c BT}{hline 44}
+
+{com}.         ren saq01 region
+{res}{txt}
+{com}.         
+. sort household_id2 
+{txt}
+{com}. order household_id2 hh_wgt urban region hh_size
+{txt}
+{com}. save "${c -(}temp{c )-}/hh_temp.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/01 Raw/Temp/hh_temp.dta{rm}
+saved
+{p_end}
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. use "$dta/Ethiopia_coord.dta", clear
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. use "/Users/manuelarias/Library/CloudStorage/Box-Box/IPA_Programs_PPI/07 PPI Development/ETHIOPIA/Ethiopia - Socioeconomic Survey 2015-2016/02 Data/01 Data/Household/Ethiopia_coord.dta"
+
+. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. ********************************************************************************
+. **      TITLE:          01_Ethiopia_ESS3_selection.do
+. **
+. **      PURPOSE:        Select indicators from original survey modules
+. **
+. **      INPUTS:         ${c -(}raw{c )-}/SEVERAL MODULES.dta
+. **
+. **      OUTPUTS:        ${c -(}clean{c )-}/ESS3_2016.dta
+. **
+. **      AUTHOR:         Manuel Cardona 
+. **
+. **      CREATED:        August 2022
+. ********************************************************************************
+. *Table of Contents
+. *1. 
+. *2. 
+. 
+. 
+. loc cdate: di %td_CCYY_NN_DD date(c(current_date), "DMY")
+{res}{txt}
+{com}. loc cdate = subinstr(trim("`cdate'"), " " , "", .)
+{txt}
+{com}. *log using "${c -(}logs{c )-}/01_Ethiopia_ESS3_selection`cdate'.smcl", replace
+. di `cdate'
+{res}20221010
+{txt}
+{com}. 
+. ******************************************
+. ************PPI - Indicators**************
+. ******************************************
+. 
+. ***********************
+. *** 0. Survey Cover ***
+. ***********************
+. 
+. use "$dta/sect_cover_hh_w3.dta", clear
+{txt}
+{com}. 
+. duplicates report household_id2
+
+{p 0 4}{txt}Duplicates in terms of {res} household_id2{p_end}
+
+{txt}{hline 10}{c TT}{hline 27}
+   Copies {c |} Observations       Surplus
+{hline 10}{c +}{hline 27}
+        1 {c |}         {res}4954             0
+{txt}{hline 10}{c BT}{hline 27}
+
+{com}. unique household_id2    //4,954 unique households
+{txt}Number of unique values of household_id2 is  {res}4954
+{txt}Number of records is  {res}4954
+{txt}
+{com}. 
+. * Keep relevant variables
+. keep household_id2 rural pw_w3 saq01 hh_saq09
+{txt}
+{com}. 
+. * Rural indicator
+. fre rural
+{res}
+{txt}rural {hline 2} EA rural urban indicator
+{txt}{hline 31}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 31}{hline 1}{c +}{hline 44}
+{txt}Valid   1 rural                 {c |}{res}       3272      66.05      66.05      66.05
+{txt}        2 SMALL TOWN            {c |}{res}        427       8.62       8.62      74.67
+{txt}        3 Meduim and large town {c |}{res}       1255      25.33      25.33     100.00
+{txt}        Total                   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 31}{hline 1}{c BT}{hline 44}
+
+{com}. gen urban=(rural!=1) if !mi(rural)
+{txt}
+{com}. label var urban "Urban==1"
+{txt}
+{com}. label define urb 0 "Rural" 1 "Urban"
+{txt}
+{com}. label values urban urb
+{txt}
+{com}. drop rural
+{txt}
+{com}. fre urban
+{res}
+{txt}urban {hline 2} Urban==1
+{txt}{hline 15}{hline 1}{c TT}{hline 44}
+{txt}        {txt}        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 15}{hline 1}{c +}{hline 44}
+{txt}Valid   0 Rural {c |}{res}       3272      66.05      66.05      66.05
+{txt}        1 Urban {c |}{res}       1682      33.95      33.95     100.00
+{txt}        Total   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 15}{hline 1}{c BT}{hline 44}
+
+{com}. 
+.         * Household weights
+.         ren pw_w3 hh_wgt
+{res}{txt}
+{com}.         
+. * Household Size
+. fre hh_saq09
+{res}
+{txt}hh_saq09 {hline 2} Household Size
+{txt}{hline 13}{hline 1}{c TT}{hline 44}
+{txt}        {txt}      {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 13}{hline 1}{c +}{hline 44}
+{txt}Valid   1     {c |}{res}        442       8.92       8.93       8.93
+{txt}        2     {c |}{res}        511      10.31      10.33      19.26
+{txt}        3     {c |}{res}        657      13.26      13.28      32.54
+{txt}        4     {c |}{res}        774      15.62      15.64      48.18
+{txt}        5     {c |}{res}        728      14.70      14.71      62.89
+{txt}        6     {c |}{res}        692      13.97      13.99      76.88
+{txt}        7     {c |}{res}        478       9.65       9.66      86.54
+{txt}        8     {c |}{res}        333       6.72       6.73      93.27
+{txt}        9     {c |}{res}        172       3.47       3.48      96.75
+{txt}        10    {c |}{res}         94       1.90       1.90      98.65
+{txt}        11    {c |}{res}         38       0.77       0.77      99.41
+{txt}        12    {c |}{res}         21       0.42       0.42      99.84
+{txt}        13    {c |}{res}          2       0.04       0.04      99.88
+{txt}        14    {c |}{res}          3       0.06       0.06      99.94
+{txt}        15    {c |}{res}          1       0.02       0.02      99.96
+{txt}        16    {c |}{res}          1       0.02       0.02      99.98
+{txt}        17    {c |}{res}          1       0.02       0.02     100.00
+{txt}        Total {c |}{res}       4948      99.88     100.00           
+{txt}Missing .     {c |}{res}          6       0.12                      
+{txt}Total         {c |}{res}       4954     100.00                      
+{txt}{hline 13}{hline 1}{c BT}{hline 44}
+
+{com}. ren hh_saq09 hh_size
+{res}{txt}
+{com}. 
+.         * Region
+.         fre saq01
+{res}
+{txt}saq01 {hline 2} Region Code
+{txt}{hline 26}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                   {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 26}{hline 1}{c +}{hline 44}
+{txt}Valid   1  Tigray          {c |}{res}        583      11.77      11.77      11.77
+{txt}        2  Afar            {c |}{res}        142       2.87       2.87      14.63
+{txt}        3  Amhara          {c |}{res}       1007      20.33      20.33      34.96
+{txt}        4  Oromia          {c |}{res}        987      19.92      19.92      54.88
+{txt}        5  Somalie         {c |}{res}        262       5.29       5.29      60.17
+{txt}        6  Benshagul Gumuz {c |}{res}        125       2.52       2.52      62.70
+{txt}        7  snnp            {c |}{res}       1121      22.63      22.63      85.32
+{txt}        12 Gambelia        {c |}{res}        114       2.30       2.30      87.63
+{txt}        13 Harari          {c |}{res}        161       3.25       3.25      90.88
+{txt}        14 Addis Ababa     {c |}{res}        247       4.99       4.99      95.86
+{txt}        15 Diredwa         {c |}{res}        205       4.14       4.14     100.00
+{txt}        Total              {c |}{res}       4954     100.00     100.00           
+{txt}{hline 26}{hline 1}{c BT}{hline 44}
+
+{com}.         ren saq01 region
+{res}{txt}
+{com}.         
+. sort household_id2 
+{txt}
+{com}. order household_id2 hh_wgt urban region hh_size
+{txt}
+{com}. save "${c -(}temp{c )-}/hh_temp.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/01 Raw/Temp/hh_temp.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. use "$dta/Ethiopia_coord.dta", clear
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. keep household_id2 lat_dd_mod lon_dd_mod
+{txt}
+{com}. ren (lat_dd_mod lon_dd_mod) (cluster_lat cluster_lon)
+{res}{txt}
+{com}. 
+. merge m:1 household_id2 using "$temp/hh_temp.dta"
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}           9,737
+{txt}{col 9}from master{col 30}{res}           4,815{txt}  (_merge==1)
+{col 9}from using{col 30}{res}           4,922{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}             139{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. keep if _merge==2
+{txt}(4,954 observations deleted)
+
+{com}. order household_id2 hh_wgt cluster_lon cluster_lat
+{txt}
+{com}. drop _merge 
+{txt}
+{com}. save "${c -(}temp{c )-}/hh_temp.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/01 Raw/Temp/hh_temp.dta{rm}
+saved
+{p_end}
+
+{com}. 
+{txt}end of do-file
+
+{com}. br 
+
+. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. ********************************************************************************
+. **      TITLE:          01_Ethiopia_ESS3_selection.do
+. **
+. **      PURPOSE:        Select indicators from original survey modules
+. **
+. **      INPUTS:         ${c -(}raw{c )-}/SEVERAL MODULES.dta
+. **
+. **      OUTPUTS:        ${c -(}clean{c )-}/ESS3_2016.dta
+. **
+. **      AUTHOR:         Manuel Cardona 
+. **
+. **      CREATED:        August 2022
+. ********************************************************************************
+. *Table of Contents
+. *1. 
+. *2. 
+. 
+. 
+. loc cdate: di %td_CCYY_NN_DD date(c(current_date), "DMY")
+{res}{txt}
+{com}. loc cdate = subinstr(trim("`cdate'"), " " , "", .)
+{txt}
+{com}. *log using "${c -(}logs{c )-}/01_Ethiopia_ESS3_selection`cdate'.smcl", replace
+. di `cdate'
+{res}20221010
+{txt}
+{com}. 
+. ******************************************
+. ************PPI - Indicators**************
+. ******************************************
+. 
+. ***********************
+. *** 0. Survey Cover ***
+. ***********************
+. 
+. use "$dta/sect_cover_hh_w3.dta", clear
+{txt}
+{com}. 
+. duplicates report household_id2
+
+{p 0 4}{txt}Duplicates in terms of {res} household_id2{p_end}
+
+{txt}{hline 10}{c TT}{hline 27}
+   Copies {c |} Observations       Surplus
+{hline 10}{c +}{hline 27}
+        1 {c |}         {res}4954             0
+{txt}{hline 10}{c BT}{hline 27}
+
+{com}. unique household_id2    //4,954 unique households
+{txt}Number of unique values of household_id2 is  {res}4954
+{txt}Number of records is  {res}4954
+{txt}
+{com}. 
+. * Keep relevant variables
+. keep household_id2 rural pw_w3 saq01 hh_saq09
+{txt}
+{com}. 
+. * Rural indicator
+. fre rural
+{res}
+{txt}rural {hline 2} EA rural urban indicator
+{txt}{hline 31}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 31}{hline 1}{c +}{hline 44}
+{txt}Valid   1 rural                 {c |}{res}       3272      66.05      66.05      66.05
+{txt}        2 SMALL TOWN            {c |}{res}        427       8.62       8.62      74.67
+{txt}        3 Meduim and large town {c |}{res}       1255      25.33      25.33     100.00
+{txt}        Total                   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 31}{hline 1}{c BT}{hline 44}
+
+{com}. gen urban=(rural!=1) if !mi(rural)
+{txt}
+{com}. label var urban "Urban==1"
+{txt}
+{com}. label define urb 0 "Rural" 1 "Urban"
+{txt}
+{com}. label values urban urb
+{txt}
+{com}. drop rural
+{txt}
+{com}. fre urban
+{res}
+{txt}urban {hline 2} Urban==1
+{txt}{hline 15}{hline 1}{c TT}{hline 44}
+{txt}        {txt}        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 15}{hline 1}{c +}{hline 44}
+{txt}Valid   0 Rural {c |}{res}       3272      66.05      66.05      66.05
+{txt}        1 Urban {c |}{res}       1682      33.95      33.95     100.00
+{txt}        Total   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 15}{hline 1}{c BT}{hline 44}
+
+{com}. 
+.         * Household weights
+.         ren pw_w3 hh_wgt
+{res}{txt}
+{com}.         
+. * Household Size
+. fre hh_saq09
+{res}
+{txt}hh_saq09 {hline 2} Household Size
+{txt}{hline 13}{hline 1}{c TT}{hline 44}
+{txt}        {txt}      {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 13}{hline 1}{c +}{hline 44}
+{txt}Valid   1     {c |}{res}        442       8.92       8.93       8.93
+{txt}        2     {c |}{res}        511      10.31      10.33      19.26
+{txt}        3     {c |}{res}        657      13.26      13.28      32.54
+{txt}        4     {c |}{res}        774      15.62      15.64      48.18
+{txt}        5     {c |}{res}        728      14.70      14.71      62.89
+{txt}        6     {c |}{res}        692      13.97      13.99      76.88
+{txt}        7     {c |}{res}        478       9.65       9.66      86.54
+{txt}        8     {c |}{res}        333       6.72       6.73      93.27
+{txt}        9     {c |}{res}        172       3.47       3.48      96.75
+{txt}        10    {c |}{res}         94       1.90       1.90      98.65
+{txt}        11    {c |}{res}         38       0.77       0.77      99.41
+{txt}        12    {c |}{res}         21       0.42       0.42      99.84
+{txt}        13    {c |}{res}          2       0.04       0.04      99.88
+{txt}        14    {c |}{res}          3       0.06       0.06      99.94
+{txt}        15    {c |}{res}          1       0.02       0.02      99.96
+{txt}        16    {c |}{res}          1       0.02       0.02      99.98
+{txt}        17    {c |}{res}          1       0.02       0.02     100.00
+{txt}        Total {c |}{res}       4948      99.88     100.00           
+{txt}Missing .     {c |}{res}          6       0.12                      
+{txt}Total         {c |}{res}       4954     100.00                      
+{txt}{hline 13}{hline 1}{c BT}{hline 44}
+
+{com}. ren hh_saq09 hh_size
+{res}{txt}
+{com}. 
+.         * Region
+.         fre saq01
+{res}
+{txt}saq01 {hline 2} Region Code
+{txt}{hline 26}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                   {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 26}{hline 1}{c +}{hline 44}
+{txt}Valid   1  Tigray          {c |}{res}        583      11.77      11.77      11.77
+{txt}        2  Afar            {c |}{res}        142       2.87       2.87      14.63
+{txt}        3  Amhara          {c |}{res}       1007      20.33      20.33      34.96
+{txt}        4  Oromia          {c |}{res}        987      19.92      19.92      54.88
+{txt}        5  Somalie         {c |}{res}        262       5.29       5.29      60.17
+{txt}        6  Benshagul Gumuz {c |}{res}        125       2.52       2.52      62.70
+{txt}        7  snnp            {c |}{res}       1121      22.63      22.63      85.32
+{txt}        12 Gambelia        {c |}{res}        114       2.30       2.30      87.63
+{txt}        13 Harari          {c |}{res}        161       3.25       3.25      90.88
+{txt}        14 Addis Ababa     {c |}{res}        247       4.99       4.99      95.86
+{txt}        15 Diredwa         {c |}{res}        205       4.14       4.14     100.00
+{txt}        Total              {c |}{res}       4954     100.00     100.00           
+{txt}{hline 26}{hline 1}{c BT}{hline 44}
+
+{com}.         ren saq01 region
+{res}{txt}
+{com}.         
+. sort household_id2 
+{txt}
+{com}. order household_id2 hh_wgt urban region hh_size
+{txt}
+{com}. save "${c -(}temp{c )-}/hh_temp.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/01 Raw/Temp/hh_temp.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. use "$dta/Ethiopia_coord.dta", clear
+{txt}
+{com}. keep household_id2 lat_dd_mod lon_dd_mod
+{txt}
+{com}. ren (lat_dd_mod lon_dd_mod) (cluster_lat cluster_lon)
+{res}{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. ********************************************************************************
+. **      TITLE:          01_Ethiopia_ESS3_selection.do
+. **
+. **      PURPOSE:        Select indicators from original survey modules
+. **
+. **      INPUTS:         ${c -(}raw{c )-}/SEVERAL MODULES.dta
+. **
+. **      OUTPUTS:        ${c -(}clean{c )-}/ESS3_2016.dta
+. **
+. **      AUTHOR:         Manuel Cardona 
+. **
+. **      CREATED:        August 2022
+. ********************************************************************************
+. *Table of Contents
+. *1. 
+. *2. 
+. 
+. 
+. loc cdate: di %td_CCYY_NN_DD date(c(current_date), "DMY")
+{res}{txt}
+{com}. loc cdate = subinstr(trim("`cdate'"), " " , "", .)
+{txt}
+{com}. *log using "${c -(}logs{c )-}/01_Ethiopia_ESS3_selection`cdate'.smcl", replace
+. di `cdate'
+{res}20221010
+{txt}
+{com}. 
+. ******************************************
+. ************PPI - Indicators**************
+. ******************************************
+. 
+. ***********************
+. *** 0. Survey Cover ***
+. ***********************
+. 
+. use "$dta/sect_cover_hh_w3.dta", clear
+{txt}
+{com}. 
+. duplicates report household_id2
+
+{p 0 4}{txt}Duplicates in terms of {res} household_id2{p_end}
+
+{txt}{hline 10}{c TT}{hline 27}
+   Copies {c |} Observations       Surplus
+{hline 10}{c +}{hline 27}
+        1 {c |}         {res}4954             0
+{txt}{hline 10}{c BT}{hline 27}
+
+{com}. unique household_id2    //4,954 unique households
+{txt}Number of unique values of household_id2 is  {res}4954
+{txt}Number of records is  {res}4954
+{txt}
+{com}. 
+. * Keep relevant variables
+. keep household_id2 rural pw_w3 saq01 hh_saq09
+{txt}
+{com}. 
+. * Rural indicator
+. fre rural
+{res}
+{txt}rural {hline 2} EA rural urban indicator
+{txt}{hline 31}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 31}{hline 1}{c +}{hline 44}
+{txt}Valid   1 rural                 {c |}{res}       3272      66.05      66.05      66.05
+{txt}        2 SMALL TOWN            {c |}{res}        427       8.62       8.62      74.67
+{txt}        3 Meduim and large town {c |}{res}       1255      25.33      25.33     100.00
+{txt}        Total                   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 31}{hline 1}{c BT}{hline 44}
+
+{com}. gen urban=(rural!=1) if !mi(rural)
+{txt}
+{com}. label var urban "Urban==1"
+{txt}
+{com}. label define urb 0 "Rural" 1 "Urban"
+{txt}
+{com}. label values urban urb
+{txt}
+{com}. drop rural
+{txt}
+{com}. fre urban
+{res}
+{txt}urban {hline 2} Urban==1
+{txt}{hline 15}{hline 1}{c TT}{hline 44}
+{txt}        {txt}        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 15}{hline 1}{c +}{hline 44}
+{txt}Valid   0 Rural {c |}{res}       3272      66.05      66.05      66.05
+{txt}        1 Urban {c |}{res}       1682      33.95      33.95     100.00
+{txt}        Total   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 15}{hline 1}{c BT}{hline 44}
+
+{com}. 
+.         * Household weights
+.         ren pw_w3 hh_wgt
+{res}{txt}
+{com}.         
+. * Household Size
+. fre hh_saq09
+{res}
+{txt}hh_saq09 {hline 2} Household Size
+{txt}{hline 13}{hline 1}{c TT}{hline 44}
+{txt}        {txt}      {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 13}{hline 1}{c +}{hline 44}
+{txt}Valid   1     {c |}{res}        442       8.92       8.93       8.93
+{txt}        2     {c |}{res}        511      10.31      10.33      19.26
+{txt}        3     {c |}{res}        657      13.26      13.28      32.54
+{txt}        4     {c |}{res}        774      15.62      15.64      48.18
+{txt}        5     {c |}{res}        728      14.70      14.71      62.89
+{txt}        6     {c |}{res}        692      13.97      13.99      76.88
+{txt}        7     {c |}{res}        478       9.65       9.66      86.54
+{txt}        8     {c |}{res}        333       6.72       6.73      93.27
+{txt}        9     {c |}{res}        172       3.47       3.48      96.75
+{txt}        10    {c |}{res}         94       1.90       1.90      98.65
+{txt}        11    {c |}{res}         38       0.77       0.77      99.41
+{txt}        12    {c |}{res}         21       0.42       0.42      99.84
+{txt}        13    {c |}{res}          2       0.04       0.04      99.88
+{txt}        14    {c |}{res}          3       0.06       0.06      99.94
+{txt}        15    {c |}{res}          1       0.02       0.02      99.96
+{txt}        16    {c |}{res}          1       0.02       0.02      99.98
+{txt}        17    {c |}{res}          1       0.02       0.02     100.00
+{txt}        Total {c |}{res}       4948      99.88     100.00           
+{txt}Missing .     {c |}{res}          6       0.12                      
+{txt}Total         {c |}{res}       4954     100.00                      
+{txt}{hline 13}{hline 1}{c BT}{hline 44}
+
+{com}. ren hh_saq09 hh_size
+{res}{txt}
+{com}. 
+.         * Region
+.         fre saq01
+{res}
+{txt}saq01 {hline 2} Region Code
+{txt}{hline 26}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                   {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 26}{hline 1}{c +}{hline 44}
+{txt}Valid   1  Tigray          {c |}{res}        583      11.77      11.77      11.77
+{txt}        2  Afar            {c |}{res}        142       2.87       2.87      14.63
+{txt}        3  Amhara          {c |}{res}       1007      20.33      20.33      34.96
+{txt}        4  Oromia          {c |}{res}        987      19.92      19.92      54.88
+{txt}        5  Somalie         {c |}{res}        262       5.29       5.29      60.17
+{txt}        6  Benshagul Gumuz {c |}{res}        125       2.52       2.52      62.70
+{txt}        7  snnp            {c |}{res}       1121      22.63      22.63      85.32
+{txt}        12 Gambelia        {c |}{res}        114       2.30       2.30      87.63
+{txt}        13 Harari          {c |}{res}        161       3.25       3.25      90.88
+{txt}        14 Addis Ababa     {c |}{res}        247       4.99       4.99      95.86
+{txt}        15 Diredwa         {c |}{res}        205       4.14       4.14     100.00
+{txt}        Total              {c |}{res}       4954     100.00     100.00           
+{txt}{hline 26}{hline 1}{c BT}{hline 44}
+
+{com}.         ren saq01 region
+{res}{txt}
+{com}.         
+. sort household_id2 
+{txt}
+{com}. order household_id2 hh_wgt urban region hh_size
+{txt}
+{com}. save "${c -(}temp{c )-}/hh_temp.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/01 Raw/Temp/hh_temp.dta{rm}
+saved
+{p_end}
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. use "$dta/Ethiopia_coord.dta", clear
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. br
+
+. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. ********************************************************************************
+. **      TITLE:          01_Ethiopia_ESS3_selection.do
+. **
+. **      PURPOSE:        Select indicators from original survey modules
+. **
+. **      INPUTS:         ${c -(}raw{c )-}/SEVERAL MODULES.dta
+. **
+. **      OUTPUTS:        ${c -(}clean{c )-}/ESS3_2016.dta
+. **
+. **      AUTHOR:         Manuel Cardona 
+. **
+. **      CREATED:        August 2022
+. ********************************************************************************
+. *Table of Contents
+. *1. 
+. *2. 
+. 
+. 
+. loc cdate: di %td_CCYY_NN_DD date(c(current_date), "DMY")
+{res}{txt}
+{com}. loc cdate = subinstr(trim("`cdate'"), " " , "", .)
+{txt}
+{com}. *log using "${c -(}logs{c )-}/01_Ethiopia_ESS3_selection`cdate'.smcl", replace
+. di `cdate'
+{res}20221010
+{txt}
+{com}. 
+. ******************************************
+. ************PPI - Indicators**************
+. ******************************************
+. 
+. ***********************
+. *** 0. Survey Cover ***
+. ***********************
+. 
+. use "$dta/sect_cover_hh_w3.dta", clear
+{txt}
+{com}. 
+. duplicates report household_id2
+
+{p 0 4}{txt}Duplicates in terms of {res} household_id2{p_end}
+
+{txt}{hline 10}{c TT}{hline 27}
+   Copies {c |} Observations       Surplus
+{hline 10}{c +}{hline 27}
+        1 {c |}         {res}4954             0
+{txt}{hline 10}{c BT}{hline 27}
+
+{com}. unique household_id2    //4,954 unique households
+{txt}Number of unique values of household_id2 is  {res}4954
+{txt}Number of records is  {res}4954
+{txt}
+{com}. 
+. * Keep relevant variables
+. keep household_id2 rural pw_w3 saq01 hh_saq09
+{txt}
+{com}. 
+. * Rural indicator
+. fre rural
+{res}
+{txt}rural {hline 2} EA rural urban indicator
+{txt}{hline 31}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 31}{hline 1}{c +}{hline 44}
+{txt}Valid   1 rural                 {c |}{res}       3272      66.05      66.05      66.05
+{txt}        2 SMALL TOWN            {c |}{res}        427       8.62       8.62      74.67
+{txt}        3 Meduim and large town {c |}{res}       1255      25.33      25.33     100.00
+{txt}        Total                   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 31}{hline 1}{c BT}{hline 44}
+
+{com}. gen urban=(rural!=1) if !mi(rural)
+{txt}
+{com}. label var urban "Urban==1"
+{txt}
+{com}. label define urb 0 "Rural" 1 "Urban"
+{txt}
+{com}. label values urban urb
+{txt}
+{com}. drop rural
+{txt}
+{com}. fre urban
+{res}
+{txt}urban {hline 2} Urban==1
+{txt}{hline 15}{hline 1}{c TT}{hline 44}
+{txt}        {txt}        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 15}{hline 1}{c +}{hline 44}
+{txt}Valid   0 Rural {c |}{res}       3272      66.05      66.05      66.05
+{txt}        1 Urban {c |}{res}       1682      33.95      33.95     100.00
+{txt}        Total   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 15}{hline 1}{c BT}{hline 44}
+
+{com}. 
+.         * Household weights
+.         ren pw_w3 hh_wgt
+{res}{txt}
+{com}.         
+. * Household Size
+. fre hh_saq09
+{res}
+{txt}hh_saq09 {hline 2} Household Size
+{txt}{hline 13}{hline 1}{c TT}{hline 44}
+{txt}        {txt}      {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 13}{hline 1}{c +}{hline 44}
+{txt}Valid   1     {c |}{res}        442       8.92       8.93       8.93
+{txt}        2     {c |}{res}        511      10.31      10.33      19.26
+{txt}        3     {c |}{res}        657      13.26      13.28      32.54
+{txt}        4     {c |}{res}        774      15.62      15.64      48.18
+{txt}        5     {c |}{res}        728      14.70      14.71      62.89
+{txt}        6     {c |}{res}        692      13.97      13.99      76.88
+{txt}        7     {c |}{res}        478       9.65       9.66      86.54
+{txt}        8     {c |}{res}        333       6.72       6.73      93.27
+{txt}        9     {c |}{res}        172       3.47       3.48      96.75
+{txt}        10    {c |}{res}         94       1.90       1.90      98.65
+{txt}        11    {c |}{res}         38       0.77       0.77      99.41
+{txt}        12    {c |}{res}         21       0.42       0.42      99.84
+{txt}        13    {c |}{res}          2       0.04       0.04      99.88
+{txt}        14    {c |}{res}          3       0.06       0.06      99.94
+{txt}        15    {c |}{res}          1       0.02       0.02      99.96
+{txt}        16    {c |}{res}          1       0.02       0.02      99.98
+{txt}        17    {c |}{res}          1       0.02       0.02     100.00
+{txt}        Total {c |}{res}       4948      99.88     100.00           
+{txt}Missing .     {c |}{res}          6       0.12                      
+{txt}Total         {c |}{res}       4954     100.00                      
+{txt}{hline 13}{hline 1}{c BT}{hline 44}
+
+{com}. ren hh_saq09 hh_size
+{res}{txt}
+{com}. 
+.         * Region
+.         fre saq01
+{res}
+{txt}saq01 {hline 2} Region Code
+{txt}{hline 26}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                   {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 26}{hline 1}{c +}{hline 44}
+{txt}Valid   1  Tigray          {c |}{res}        583      11.77      11.77      11.77
+{txt}        2  Afar            {c |}{res}        142       2.87       2.87      14.63
+{txt}        3  Amhara          {c |}{res}       1007      20.33      20.33      34.96
+{txt}        4  Oromia          {c |}{res}        987      19.92      19.92      54.88
+{txt}        5  Somalie         {c |}{res}        262       5.29       5.29      60.17
+{txt}        6  Benshagul Gumuz {c |}{res}        125       2.52       2.52      62.70
+{txt}        7  snnp            {c |}{res}       1121      22.63      22.63      85.32
+{txt}        12 Gambelia        {c |}{res}        114       2.30       2.30      87.63
+{txt}        13 Harari          {c |}{res}        161       3.25       3.25      90.88
+{txt}        14 Addis Ababa     {c |}{res}        247       4.99       4.99      95.86
+{txt}        15 Diredwa         {c |}{res}        205       4.14       4.14     100.00
+{txt}        Total              {c |}{res}       4954     100.00     100.00           
+{txt}{hline 26}{hline 1}{c BT}{hline 44}
+
+{com}.         ren saq01 region
+{res}{txt}
+{com}.         
+. sort household_id2 
+{txt}
+{com}. order household_id2 hh_wgt urban region hh_size
+{txt}
+{com}. save "${c -(}temp{c )-}/hh_temp.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/01 Raw/Temp/hh_temp.dta{rm}
+saved
+{p_end}
+
+{com}. 
+{txt}end of do-file
+
+{com}. br if household_id2=="010101088801601000"
+
+. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. ********************************************************************************
+. **      TITLE:          01_Ethiopia_ESS3_selection.do
+. **
+. **      PURPOSE:        Select indicators from original survey modules
+. **
+. **      INPUTS:         ${c -(}raw{c )-}/SEVERAL MODULES.dta
+. **
+. **      OUTPUTS:        ${c -(}clean{c )-}/ESS3_2016.dta
+. **
+. **      AUTHOR:         Manuel Cardona 
+. **
+. **      CREATED:        August 2022
+. ********************************************************************************
+. *Table of Contents
+. *1. 
+. *2. 
+. 
+. 
+. loc cdate: di %td_CCYY_NN_DD date(c(current_date), "DMY")
+{res}{txt}
+{com}. loc cdate = subinstr(trim("`cdate'"), " " , "", .)
+{txt}
+{com}. *log using "${c -(}logs{c )-}/01_Ethiopia_ESS3_selection`cdate'.smcl", replace
+. di `cdate'
+{res}20221010
+{txt}
+{com}. 
+. ******************************************
+. ************PPI - Indicators**************
+. ******************************************
+. 
+. ***********************
+. *** 0. Survey Cover ***
+. ***********************
+. 
+. use "$dta/sect_cover_hh_w3.dta", clear
+{txt}
+{com}. 
+. duplicates report household_id2
+
+{p 0 4}{txt}Duplicates in terms of {res} household_id2{p_end}
+
+{txt}{hline 10}{c TT}{hline 27}
+   Copies {c |} Observations       Surplus
+{hline 10}{c +}{hline 27}
+        1 {c |}         {res}4954             0
+{txt}{hline 10}{c BT}{hline 27}
+
+{com}. unique household_id2    //4,954 unique households
+{txt}Number of unique values of household_id2 is  {res}4954
+{txt}Number of records is  {res}4954
+{txt}
+{com}. 
+. * Keep relevant variables
+. keep household_id2 rural pw_w3 saq01 hh_saq09
+{txt}
+{com}. 
+. * Rural indicator
+. fre rural
+{res}
+{txt}rural {hline 2} EA rural urban indicator
+{txt}{hline 31}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 31}{hline 1}{c +}{hline 44}
+{txt}Valid   1 rural                 {c |}{res}       3272      66.05      66.05      66.05
+{txt}        2 SMALL TOWN            {c |}{res}        427       8.62       8.62      74.67
+{txt}        3 Meduim and large town {c |}{res}       1255      25.33      25.33     100.00
+{txt}        Total                   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 31}{hline 1}{c BT}{hline 44}
+
+{com}. gen urban=(rural!=1) if !mi(rural)
+{txt}
+{com}. label var urban "Urban==1"
+{txt}
+{com}. label define urb 0 "Rural" 1 "Urban"
+{txt}
+{com}. label values urban urb
+{txt}
+{com}. drop rural
+{txt}
+{com}. fre urban
+{res}
+{txt}urban {hline 2} Urban==1
+{txt}{hline 15}{hline 1}{c TT}{hline 44}
+{txt}        {txt}        {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 15}{hline 1}{c +}{hline 44}
+{txt}Valid   0 Rural {c |}{res}       3272      66.05      66.05      66.05
+{txt}        1 Urban {c |}{res}       1682      33.95      33.95     100.00
+{txt}        Total   {c |}{res}       4954     100.00     100.00           
+{txt}{hline 15}{hline 1}{c BT}{hline 44}
+
+{com}. 
+.         * Household weights
+.         ren pw_w3 hh_wgt
+{res}{txt}
+{com}.         
+. * Household Size
+. fre hh_saq09
+{res}
+{txt}hh_saq09 {hline 2} Household Size
+{txt}{hline 13}{hline 1}{c TT}{hline 44}
+{txt}        {txt}      {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 13}{hline 1}{c +}{hline 44}
+{txt}Valid   1     {c |}{res}        442       8.92       8.93       8.93
+{txt}        2     {c |}{res}        511      10.31      10.33      19.26
+{txt}        3     {c |}{res}        657      13.26      13.28      32.54
+{txt}        4     {c |}{res}        774      15.62      15.64      48.18
+{txt}        5     {c |}{res}        728      14.70      14.71      62.89
+{txt}        6     {c |}{res}        692      13.97      13.99      76.88
+{txt}        7     {c |}{res}        478       9.65       9.66      86.54
+{txt}        8     {c |}{res}        333       6.72       6.73      93.27
+{txt}        9     {c |}{res}        172       3.47       3.48      96.75
+{txt}        10    {c |}{res}         94       1.90       1.90      98.65
+{txt}        11    {c |}{res}         38       0.77       0.77      99.41
+{txt}        12    {c |}{res}         21       0.42       0.42      99.84
+{txt}        13    {c |}{res}          2       0.04       0.04      99.88
+{txt}        14    {c |}{res}          3       0.06       0.06      99.94
+{txt}        15    {c |}{res}          1       0.02       0.02      99.96
+{txt}        16    {c |}{res}          1       0.02       0.02      99.98
+{txt}        17    {c |}{res}          1       0.02       0.02     100.00
+{txt}        Total {c |}{res}       4948      99.88     100.00           
+{txt}Missing .     {c |}{res}          6       0.12                      
+{txt}Total         {c |}{res}       4954     100.00                      
+{txt}{hline 13}{hline 1}{c BT}{hline 44}
+
+{com}. ren hh_saq09 hh_size
+{res}{txt}
+{com}. 
+.         * Region
+.         fre saq01
+{res}
+{txt}saq01 {hline 2} Region Code
+{txt}{hline 26}{hline 1}{c TT}{hline 44}
+{txt}        {txt}                   {c |}      Freq.    Percent      Valid       Cum.
+{txt}{hline 26}{hline 1}{c +}{hline 44}
+{txt}Valid   1  Tigray          {c |}{res}        583      11.77      11.77      11.77
+{txt}        2  Afar            {c |}{res}        142       2.87       2.87      14.63
+{txt}        3  Amhara          {c |}{res}       1007      20.33      20.33      34.96
+{txt}        4  Oromia          {c |}{res}        987      19.92      19.92      54.88
+{txt}        5  Somalie         {c |}{res}        262       5.29       5.29      60.17
+{txt}        6  Benshagul Gumuz {c |}{res}        125       2.52       2.52      62.70
+{txt}        7  snnp            {c |}{res}       1121      22.63      22.63      85.32
+{txt}        12 Gambelia        {c |}{res}        114       2.30       2.30      87.63
+{txt}        13 Harari          {c |}{res}        161       3.25       3.25      90.88
+{txt}        14 Addis Ababa     {c |}{res}        247       4.99       4.99      95.86
+{txt}        15 Diredwa         {c |}{res}        205       4.14       4.14     100.00
+{txt}        Total              {c |}{res}       4954     100.00     100.00           
+{txt}{hline 26}{hline 1}{c BT}{hline 44}
+
+{com}.         ren saq01 region
+{res}{txt}
+{com}.         
+. sort household_id2 
+{txt}
+{com}. order household_id2 hh_wgt urban region hh_size
+{txt}
+{com}. save "${c -(}temp{c )-}/hh_temp.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/01 Raw/Temp/hh_temp.dta{rm}
+saved
+{p_end}
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "/var/folders/y6/8ygz44sj6z7fmd43b_dbmjmw0000gn/T//SD00590.000000"
+{txt}
+{com}. ********************************************************************************
+. **      TITLE:          00_master.do
+. **
+. **      PURPOSE:        Run all do files to clean and organize household-level data
+. **                              
+. **      NOTES:
+. **
+. **      AUTHOR:         Manuel Cardona  
+. **
+. **      CREATED:        August 2022
+. **
+. **      MODFIIED: Manuel Cardona (August 17, 2022)
+. ********************************************************************************
+. *Table of Contents:
+. *0. Set Directories
+. *1. Select indicators
+. *2. Create poverty indicators
+. 
+. clear all
+{res}{txt}
+{com}. cap log close
+{smcl}
+{com}{sf}{ul off}

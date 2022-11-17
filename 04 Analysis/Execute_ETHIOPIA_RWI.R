@@ -35,7 +35,7 @@ candidate_feature_first_col <- 28 #the column number of the first candidate indi
 candidate_feature_last_col <- 56 #the column number of the last candidate indicator
 region_number <- 4 #Number of regions in question_key
 sub_question_number <- 1 #identify unique question number (from the key file) for the subnational questions
-numb_questions <- c(10) # Number of questions that are to be selected by the LASSO
+numb_questions <- c(11) # Number of questions that are to be selected by the LASSO
 prop_trained <- 0.66 # Proportion of the sample used for the training data set (the final scorecard is based on the entire survey)
 
 #Bootstrapping options (shouldn't change them)
@@ -323,19 +323,19 @@ for (nq in numb_questions) {
 ################# STEP 7: Predict fitted values based on the elastic-net model and create a function that maps the relationship 
 # of these fitted values vs the adjusted values that go from 0 to 100 that we created
 # Based on the sigmoid function (the one used in logit and the elastic net regression), estimate probabilities for the trainning set
-predicted_prob_full <- prediction_function(data = survey_data, y = pov, glm_object = stable_fit_survey,
+predicted_prob_test <- prediction_function(data = test_data, y = pov, glm_object = stable_fit_survey,
                                            stable_coef_names = coefficient_names_survey, lambda = selected_lambda, type = "response")
 
-score_survey <- round(score_survey, 0)
-score_survey[score_survey<1] <- 1
-lookup_data_full <-  data.frame(cbind(score_survey, predicted_prob_full)) # Construct the Lookup Table that maps scores to probabilities
-lookup_table_full <- as.data.frame(as.matrix(create_lookup_table(lookup_data_full)))  # Use the training data relationship as the basis of the lookup table
+score_test <- round(score_test, 0)
+score_test[score_test<1] <- 1
+lookup_data_test <-  data.frame(cbind(score_test, predicted_prob_test)) # Construct the Lookup Table that maps scores to probabilities
+lookup_table_test <- as.data.frame(as.matrix(create_lookup_table(lookup_data_test)))  # Use the training data relationship as the basis of the lookup table
 
 ################# STEP 8: Etimate prediction errors on the test set (targetting and poverty rates)
-pred_score_pr_full <- prob_lookup_table(lookup_table_full, score_survey) #These are the predicted probabilities from the transformed/simplified model we created
-full_data_pr <- cbind(survey_data, pred_score_pr_full) # Merge model predictions with test data
+pred_score_pr_test <- prob_lookup_table(lookup_table_test, score_test) #These are the predicted probabilities from the transformed/simplified model we created
+test_data_pr <- cbind(test_data, pred_score_pr_test) # Merge model predictions with test data
 
-full_data_pr <- full_data_pr[, c("hh_id", "hh_weight", "urban", "poor_npl1", "pred_score_pr_full")]
-write.csv(full_data_pr,  file = paste(results, "//", "Predicted_scores_", nq, "q_", "NPL1.csv", sep=""), row.names = T)
+test_data_pr <- test_data_pr[, c("hh_id", "hh_weight", "urban", "poor_npl1", "pred_score_pr_test")]
+write.csv(test_data_pr,  file = paste(results, "//", "Predicted_scores_", nq, "q_", "NPL1.csv", sep=""), row.names = T)
 
 

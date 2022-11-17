@@ -1,0 +1,346 @@
+{smcl}
+{txt}{sf}{ul off}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/03 Data Wrangling/Do files/log_files/05_Ethiopia_ESS3_qkey_20221010.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}10 Oct 2022, 21:16:01
+{txt}
+{com}. di `cdate'              
+{res}20221010
+{txt}
+{com}.         
+. 
+.                                 ************************************************
+.                                 ************************************************
+.                                 *******Arrange for question key CSV file******** After changing the globals: this code should run without any further changes
+.                                 ************************************************
+.                                 ************************************************
+.                                 u "$clean/$ppidb", clear
+{txt}
+{com}.                                 
+.                                 *************To customize:*****************
+.                                 ///////////////////////////////////////////
+>                                 global obs_start = 23 //This is the observation where questions that were split into different categories begin
+{txt}
+{com}.                                 global obs_na = 22 //Observations such as poverty rates, weights and urban/rural are not supposed to be included. 
+{txt}
+{com}.                                                                   //This sets the number of obs that should be dropped before the we output the qkey file
+.                                 global minus = 1 //This shouldn't be changed unless one var has more than 10 categories. If this is true, change it to 3.
+{txt}
+{com}.                                 ///////////////////////////////////////////
+>                                         
+.                                 *Generate CSV file that numbers every variable and groups the dummies by original variable (all region dummies will be assigned the same number)
+.                                         gen varname = ""
+{txt}(4,929 missing values generated)
+
+{com}.                                         local i = 1                                                                     //Local that equals 1
+{txt}
+{com}.                                 foreach var of varlist * {c -(}                                              //Loop that goes through all variables          
+{txt}  2{com}.                                         replace varname = "`var'" in `i'                        //For observation "i", replace with the name of each variable on the list
+{txt}  3{com}.                                         local i = `i' + 1                                                       //Change the local by adding 1: therefore, we will replace next variable name in the following observation
+{txt}  4{com}.                                 {c )-}
+{txt}variable {bf}{res}varname{sf}{txt} was {bf}{res}str1{sf}{txt} now {bf}{res}str13{sf}
+{txt}(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+variable {bf}{res}varname{sf}{txt} was {bf}{res}str13{sf}{txt} now {bf}{res}str14{sf}
+{txt}(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+variable {bf}{res}varname{sf}{txt} was {bf}{res}str14{sf}{txt} now {bf}{res}str16{sf}
+{txt}(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+variable {bf}{res}varname{sf}{txt} was {bf}{res}str16{sf}{txt} now {bf}{res}str20{sf}
+{txt}(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+
+{com}.                                 drop in 1/$obs_na 
+{txt}(22 observations deleted)
+
+{com}.                                 replace varname = "" if varname == "varname"    //Since varname is a variable, we delete it
+{txt}(1 real change made)
+
+{com}.                                 
+.                                 *Generate another variable that takes away last two characters of our variable names
+.                                 generate varname2=substr(varname,1, strlen(varname)-$minus)   //Make sure to change the numbers in each case
+{txt}(4,793 missing values generated)
+
+{com}.                                 replace varname2= varname if varname2=="" //Remove obs with varname
+{txt}(0 real changes made)
+
+{com}.                                 drop if varname=="" //Keep only the number of obs = to number of variables
+{txt}(4,793 observations deleted)
+
+{com}.                                 gen a = 1 if varname2!=varname2[_n-1]  //We tag obs if past varname is not the same as the new one
+{txt}(13 missing values generated)
+
+{com}.                                 gen unique_var_number = _n if a==1 //We make a count variable for each case in which we have a variable genre for the first time
+{txt}(13 missing values generated)
+
+{com}.                                 replace unique_var_number = unique_var_number[_n-1] if unique_var_number==. //Replace all missings with a number that is the same for each var genre
+{txt}(13 real changes made)
+
+{com}.                                 
+.                                 *Unique_var_name has some jumps (e.g. from 60 to 69). We don't want this to happen. So we wil fix it (e.g. so after 60 goes 61).
+.                                 local i = 1
+{txt}
+{com}.                                 levelsof unique_var_number, local(levels)  //Store all the levels of unique_var_number   
+{res}{txt}1 5 7 8 10 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 90 92 93 95 96 97 98 100 102 103 105 106 107 108 109 110 111 112 114
+
+{com}.                                 foreach lev of local levels {c -(}                   //Loop through all those levels    
+{txt}  2{com}.                                         replace unique_var_number = `i' if unique_var_number == `lev'  //Replace each level with the local i; which will go continuously 1 by 1. 
+{txt}  3{com}.                                         local i = `i' + 1       //We add 1 every time we are finished with one level
+{txt}  4{com}.                                  {c )-}
+{txt}(0 real changes made)
+(2 real changes made)
+(1 real change made)
+(2 real changes made)
+(2 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(2 real changes made)
+(2 real changes made)
+(1 real change made)
+(2 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(2 real changes made)
+(2 real changes made)
+(1 real change made)
+(2 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(2 real changes made)
+(1 real change made)
+
+{com}.                                 
+.                                 rename (unique_var_number varname) (unique_q_number variable_name)
+{res}{txt}
+{com}.                                 keep  variable_name unique_q_number
+{txt}
+{com}.                                 order unique_q_number
+{txt}
+{com}.                                 
+.                 
+. **C. Save
+.         * Save
+.         export delimited using "$clean/$qkey",  replace
+{res}{txt}file {bf:/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/02 Data/02 Clean/LSMS/Full datasets/Ethiopia_ESS3_QuestionKEY_full.csv} saved
+
+{com}. 
+.         * Close log
+.         log c
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}/Users/manuelarias/Documents/GitHub/satellite_to_poverty_IPA/03 Data Wrangling/Do files/log_files/05_Ethiopia_ESS3_qkey_20221010.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}10 Oct 2022, 21:16:01
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
